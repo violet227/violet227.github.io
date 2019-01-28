@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+  <title>Thomas&#39;s Blog</title>
+  
+  <subtitle>王韬</subtitle>
+  <link href="/atom.xml" rel="self"/>
+  
+  <link href="http://yoursite.com/"/>
+  <updated>2019-01-28T13:56:40.443Z</updated>
+  <id>http://yoursite.com/</id>
+  
+  <author>
+    <name>孤岛violet</name>
+    
+  </author>
+  
+  <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>误差补偿模型</title>
+    <link href="http://yoursite.com/2019/01/28/%E8%AF%AF%E5%B7%AE%E8%A1%A5%E5%81%BF%E6%A8%A1%E5%9E%8B/"/>
+    <id>http://yoursite.com/2019/01/28/误差补偿模型/</id>
+    <published>2019-01-28T08:41:17.000Z</published>
+    <updated>2019-01-28T13:56:40.443Z</updated>
+    
+    <content type="html"><![CDATA[<blockquote><p>就像来自遥远宇宙的一束光，不知道它从哪里来，也不知道它到哪里去，从我们头上掠过，波澜不惊。</p></blockquote><h3 id="误差来源"><a href="#误差来源" class="headerlink" title="误差来源"></a>误差来源</h3><p>视觉测量误差主要来源有：图像采集误差，相机安装误差，运动平台误差。其中高精度的CCD传感器与图像采集卡的误差微乎其微可以忽略；相机坐标系如果与水平面不共面或共面但是存在夹角都会引入误差；三维运动平台的几何误差的垂直度问题将导致图像处理中的圆心提取和图像拼接，误差需要补偿。</p><h3 id="坐标系转换"><a href="#坐标系转换" class="headerlink" title="坐标系转换"></a>坐标系转换</h3><p><img src="https://img-blog.csdnimg.cn/20181122134704175.jpg?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2ZseV93dA==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"></p><ol><li>图像坐标系<br><img src="https://img-blog.csdnimg.cn/20181122141206254.png" alt="在这里插入图片描述"><br>图像坐标系建立在CCD传感器的面上如上图。</li><li>视觉坐标系<br><img src="https://img-blog.csdnimg.cn/20181122141220479.png" alt="在这里插入图片描述"></li><li>装配作业坐标系<br>与视觉坐标系建系相同<br><img src="https://img-blog.csdnimg.cn/20181122141449212.png" alt="在这里插入图片描述"></li><li>世界坐标系<br>世界坐标系是空间绝对坐标系，选取视觉坐标为世界坐标系即可</li></ol><h3 id="转换"><a href="#转换" class="headerlink" title="转换"></a>转换</h3><p>各坐标系的空间位置如图所示，三维运动平台中X轴和Y轴滑台不垂直，YV0和YC0为实际的Y轴滑台运动方向。图像坐标系UOV与世界坐标系XWOYW之间的夹角为θ，以世界坐标系XW轴为基准，图像U轴向世界坐标系Y轴正方向偏转为正，反之为负。视觉测量模块三维运动平台X轴与YV0轴滑台之间的夹角为α。世界坐标系和装配作业坐标系XCOYC之间的夹角为φ，以世界坐标系X轴为基准，装配作业坐标系X轴向世界坐标系Y轴正方向偏转为正，反之为负。装配作业模块三维运动平台X轴与YC0轴滑台之间夹角为β。<br><img src="https://img-blog.csdnimg.cn/20190113194541759.png?x-oss-process=image/watermark,type_ZmFuZ3poZW5naGVpdGk,shadow_10,text_aHR0cHM6Ly9ibG9nLmNzZG4ubmV0L2ZseV93dA==,size_16,color_FFFFFF,t_70" alt="在这里插入图片描述"><br>根据坐标系之间的坐标转换关系建立误差补偿模型，以图像中一点为例，分别将其从图像坐标系装换到世界坐标系和装配作业坐标系中。<br>首先完成由图像坐标系向世界坐标系的转换，设图像中一点（u，v），其在世界坐标系中的坐标为（x，y），由于图像坐标系单位为像素，世界坐标系单位为微米，单位转换关系为：<br>$$P=\begin{cases}<br>​        u_0=u \times S_x\<br>​        v_0=v \times S_y<br>​    \end{cases} \tag{1}<br>​    $$<br>相应的矩阵形式$M_s$为：<br>$$<br>M_s=<br> \begin{bmatrix}<br>   S_x &amp; 0 &amp; 0 \<br>   0&amp; S_y &amp; 0 \<br>  0 &amp; 0 &amp; 1<br>  \end{bmatrix} \tag{2}<br>$$</p><p>图像坐标系和世界坐标系坐标轴之间存在夹角θ，需对图像坐标系进行旋转，旋转矩阵$M_R$为：<br>$$<br>M_R=<br> \begin{bmatrix}<br>  cos\theta &amp; -sin\theta &amp; 0 \<br>  sin\theta&amp; cos\theta&amp; 0 \<br>  0 &amp; 0 &amp; 1<br>  \end{bmatrix} \tag{3}<br>$$<br>采集过程中相机会变换采集位置，应该对图像坐标系原点和世界坐标系原点之间的距离进行补偿，需要进行平移变换，相应的平移变换矩阵$M_T$为：<br>$$<br>M_T=<br> \begin{bmatrix}<br>  1 &amp; 0 &amp; D_x \<br> 0&amp; 1&amp; D_y\<br>  0 &amp; 0 &amp; 1<br>  \end{bmatrix} \tag{4}<br>$$<br>图像坐标系原点在世界坐标系中的坐标值（Dx，Dy）无法直接获取，从图5.4可知，相机在三维运动平台中XY向滑台位移分别为dx和dy，经计算得出此时相机在世界坐标系的坐标（Dx，Dy），计算公式为：<br>$$<br>\begin{cases}<br>        D_x=d_x-d_y \times sin(\alpha-90^o)\<br>        D_y=d_y \times cos(\alpha-90^o)<br>    \end{cases} \tag{5}<br>$$<br>图像中一点（u，v）转换为世界坐标系一点（x，y）的误差补偿模型表达式为：<br>$$<br> \begin{bmatrix}<br>  x \<br> y\<br>  1<br>  \end{bmatrix} =<br>   \begin{bmatrix}<br>  1&amp;0&amp;d_x-d_y \times sin(\alpha-90^o)\<br> 0&amp; 1&amp; d_y \times cos(\alpha-90^o)\<br>  0&amp;0&amp;1<br>  \end{bmatrix}<br>   \begin{bmatrix}<br>  cos\theta &amp; -sin\theta &amp; 0 \<br>  sin\theta&amp; cos\theta&amp; 0 \<br>  0 &amp; 0 &amp; 1<br>  \end{bmatrix}<br>   \begin{bmatrix}<br>   S_x &amp; 0 &amp; 0 \<br>   0&amp; S_y &amp; 0 \<br>  0 &amp; 0 &amp; 1<br>  \end{bmatrix}<br>   \begin{bmatrix}<br>  u\<br>v\<br>  1<br>  \end{bmatrix} \tag{6}<br>$$<br>得到零件在世界坐标系中的坐标后，装配作业模块夹持壳体完成对正。由于世界坐标系和装配作业坐标系之间存在夹角，并且装配作业模块XY滑台不垂直，需要进行误差补偿。<br>装配过程仅需获取两个零件圆心的相对位置，不要求零件的绝对位置。可直接建立相对位置转换的误差补偿模型。设两零件在世界坐标系中的距离为（ΔX，ΔY），转换到装配作业坐标系后坐标为（ΔXC，ΔYC）。<br>首先对世界坐标系进行旋转补偿夹角φ，旋转矩阵$M_R$为：<br>$$<br>M_R=<br>   \begin{bmatrix}<br>  cos\varphi &amp; sin\varphi &amp; 0\<br>  -sin\varphi &amp; cos\varphi &amp; 0\<br>0 &amp; 0&amp; 1<br>  \end{bmatrix} \tag{7}<br>$$<br>旋转变换之后得到两个圆心在装配作业坐标系中的坐标差，由于装配作业模块XY向滑台不垂直，需要计算出XY滑台应该补偿的实际距离，转换矩阵$M_D$为：<br>$$<br>M_D=<br>\begin{bmatrix}<br>1 &amp; tan(\beta-90^o) &amp; 0\<br>0 &amp; sec(\beta-90^o) &amp; 0 \<br>0 &amp; 0 &amp;1<br>\end{bmatrix} \tag{8}<br>$$<br>零件圆心世界坐标系中的坐标差转换到装配作业坐标系中，并计算出实际的XY滑台补偿位移量（ΔXC0，ΔYC0）误差补偿模型的矩阵表达式为：<br>$$<br> \begin{bmatrix}<br>  \Delta X_{CO} \<br>   \Delta Y_{CO} \<br>  1<br>  \end{bmatrix} =<br>   \begin{bmatrix}<br>1 &amp; tan(\beta-90^o) &amp; 0\<br>0 &amp; sec(\beta-90^o) &amp; 0 \<br>0 &amp; 0 &amp;1<br>\end{bmatrix}<br>   \begin{bmatrix}<br>  cos\varphi &amp; sin\varphi &amp; 0\<br>  -sin\varphi &amp; cos\varphi &amp; 0\<br>0 &amp; 0&amp; 1<br>  \end{bmatrix}<br>   \begin{bmatrix}<br>  \Delta X\<br>   \Delta Y\<br>  1<br>  \end{bmatrix} \tag{9}<br>$$<br>终于敲完了，latex确实很好用，矩阵书写很方便，坚持用Markdown来写博客！</p>]]></content>
+    
+    <summary type="html">
+    
+      
+      
+        &lt;blockquote&gt;
+&lt;p&gt;就像来自遥远宇宙的一束光，不知道它从哪里来，也不知道它到哪里去，从我们头上掠过，波澜不惊。&lt;/p&gt;
+&lt;/blockquote&gt;
+&lt;h3 id=&quot;误差来源&quot;&gt;&lt;a href=&quot;#误差来源&quot; class=&quot;headerlink&quot; title=&quot;误差来源
+      
+    
+    </summary>
+    
+      <category term="Computer Vision" scheme="http://yoursite.com/categories/Computer-Vision/"/>
+    
+    
+      <category term="坐标转换" scheme="http://yoursite.com/tags/%E5%9D%90%E6%A0%87%E8%BD%AC%E6%8D%A2/"/>
+    
+      <category term="camera calibrate" scheme="http://yoursite.com/tags/camera-calibrate/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>我的第一篇博客</title>
+    <link href="http://yoursite.com/2019/01/27/hello-world/"/>
+    <id>http://yoursite.com/2019/01/27/hello-world/</id>
+    <published>2019-01-26T16:00:00.000Z</published>
+    <updated>2019-01-28T13:54:17.441Z</updated>
+    
+    <content type="html"><![CDATA[<p>终于搭建成功了个人网站，愿君乘风破浪，不枉满腔赤诚！</p><h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo new <span class="string">"My New Post"</span></span><br></pre></td></tr></table></figure><p>More info: <a href="https://hexo.io/docs/writing.html" target="_blank" rel="noopener">Writing</a></p><h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure><p>More info: <a href="https://hexo.io/docs/server.html" target="_blank" rel="noopener">Server</a></p><h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure><p>More info: <a href="https://hexo.io/docs/generating.html" target="_blank" rel="noopener">Generating</a></p><h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure><p>More info: <a href="https://hexo.io/docs/deployment.html" target="_blank" rel="noopener">Deployment</a></p>]]></content>
+    
+    <summary type="html">
+    
+      
+      
+        &lt;p&gt;终于搭建成功了个人网站，愿君乘风破浪，不枉满腔赤诚！&lt;/p&gt;
+&lt;h2 id=&quot;Quick-Start&quot;&gt;&lt;a href=&quot;#Quick-Start&quot; class=&quot;headerlink&quot; title=&quot;Quick Start&quot;&gt;&lt;/a&gt;Quick Start&lt;/h2&gt;&lt;h3
+      
+    
+    </summary>
+    
+      <category term="hexo" scheme="http://yoursite.com/categories/hexo/"/>
+    
+    
+      <category term="blog" scheme="http://yoursite.com/tags/blog/"/>
+    
+      <category term="hexo" scheme="http://yoursite.com/tags/hexo/"/>
+    
+  </entry>
+  
+</feed>
