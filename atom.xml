@@ -6,7 +6,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://yoursite.com/"/>
-  <updated>2019-01-28T13:56:40.443Z</updated>
+  <updated>2019-01-29T05:35:15.069Z</updated>
   <id>http://yoursite.com/</id>
   
   <author>
@@ -15,6 +15,33 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>一款类似于mac dock栏的windows软件</title>
+    <link href="http://yoursite.com/2019/01/29/%E4%B8%80%E6%AC%BE%E7%B1%BB%E4%BC%BC%E4%BA%8Emac-dock%E6%A0%8F%E7%9A%84windows%E8%BD%AF%E4%BB%B6/"/>
+    <id>http://yoursite.com/2019/01/29/一款类似于mac-dock栏的windows软件/</id>
+    <published>2019-01-29T05:27:33.000Z</published>
+    <updated>2019-01-29T05:35:15.069Z</updated>
+    
+    <content type="html"><![CDATA[<h3 id="一款类似于mac-dock栏的windows软件"><a href="#一款类似于mac-dock栏的windows软件" class="headerlink" title="一款类似于mac-dock栏的windows软件"></a>一款类似于mac-dock栏的windows软件</h3><p><img src="C:\Users\guitar27\AppData\Roaming\Typora\typora-user-images\1548739813620.png" alt="1548739813620"></p><p>软件名称叫 <code>Winstep Nexus Ultimate</code></p><p>软件链接如下：</p><p>链接：<a href="https://www.lanzous.com/i1xnevc" target="_blank" rel="noopener">https://www.lanzous.com/i1xnevc</a>    密码:5vsy</p><h4 id="安装破解方法"><a href="#安装破解方法" class="headerlink" title="安装破解方法"></a>安装破解方法</h4><ol><li>下载安装Winstep Nexus，安装完成后不要启动</li><li>以管理员权限运行Activation.exe，将其安装到Winstep Nexus默认目录中</li><li>启动Winstep Nexus，输入任意用户名和密钥注册</li><li>重启Winstep Nexus即为激活版</li></ol><p>注：不能更新，如果更新，可重新执2-4步  </p><h4 id="效果图"><a href="#效果图" class="headerlink" title="效果图"></a>效果图</h4><p><img src="C:\Users\guitar27\AppData\Roaming\Typora\typora-user-images\1548740015157.png" alt="1548740015157"></p><p>这是我的桌面，软件的主题有很多，挑自己喜欢的风格和颜色即可。</p><blockquote><p>每天写点东西，让坚持变成习惯!</p></blockquote>]]></content>
+    
+    <summary type="html">
+    
+      
+      
+        &lt;h3 id=&quot;一款类似于mac-dock栏的windows软件&quot;&gt;&lt;a href=&quot;#一款类似于mac-dock栏的windows软件&quot; class=&quot;headerlink&quot; title=&quot;一款类似于mac-dock栏的windows软件&quot;&gt;&lt;/a&gt;一款类似于mac-dock栏
+      
+    
+    </summary>
+    
+      <category term="黑科技" scheme="http://yoursite.com/categories/%E9%BB%91%E7%A7%91%E6%8A%80/"/>
+    
+    
+      <category term="mac dock" scheme="http://yoursite.com/tags/mac-dock/"/>
+    
+      <category term="黑科技" scheme="http://yoursite.com/tags/%E9%BB%91%E7%A7%91%E6%8A%80/"/>
+    
+  </entry>
   
   <entry>
     <title>误差补偿模型</title>
@@ -51,24 +78,22 @@
     <link href="http://yoursite.com/2019/01/27/hello-world/"/>
     <id>http://yoursite.com/2019/01/27/hello-world/</id>
     <published>2019-01-26T16:00:00.000Z</published>
-    <updated>2019-01-28T13:54:17.441Z</updated>
+    <updated>2019-01-29T05:25:15.170Z</updated>
     
-    <content type="html"><![CDATA[<p>终于搭建成功了个人网站，愿君乘风破浪，不枉满腔赤诚！</p><h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo new <span class="string">"My New Post"</span></span><br></pre></td></tr></table></figure><p>More info: <a href="https://hexo.io/docs/writing.html" target="_blank" rel="noopener">Writing</a></p><h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure><p>More info: <a href="https://hexo.io/docs/server.html" target="_blank" rel="noopener">Server</a></p><h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure><p>More info: <a href="https://hexo.io/docs/generating.html" target="_blank" rel="noopener">Generating</a></p><h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure><p>More info: <a href="https://hexo.io/docs/deployment.html" target="_blank" rel="noopener">Deployment</a></p>]]></content>
+    <content type="html"><![CDATA[<p>终于搭建成功了个人网站，愿君乘风破浪，不枉满腔赤诚！</p><h2 id="常用操作"><a href="#常用操作" class="headerlink" title="常用操作"></a>常用操作</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo new <span class="string">"My New Post"</span></span><br></pre></td></tr></table></figure><p>生成一篇新的博客，然后选用一款<code>markdown</code>编辑器进行编辑即可</p><h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo clean &amp;&amp; hexo s</span><br></pre></td></tr></table></figure><p>这条语句经常用来本地测试博客的更改情况和效果。</p><h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure><p>生成文件</p><h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure><p>部署到服务器</p>]]></content>
     
     <summary type="html">
     
       
       
         &lt;p&gt;终于搭建成功了个人网站，愿君乘风破浪，不枉满腔赤诚！&lt;/p&gt;
-&lt;h2 id=&quot;Quick-Start&quot;&gt;&lt;a href=&quot;#Quick-Start&quot; class=&quot;headerlink&quot; title=&quot;Quick Start&quot;&gt;&lt;/a&gt;Quick Start&lt;/h2&gt;&lt;h3
+&lt;h2 id=&quot;常用操作&quot;&gt;&lt;a href=&quot;#常用操作&quot; class=&quot;headerlink&quot; title=&quot;常用操作&quot;&gt;&lt;/a&gt;常用操作&lt;/h2&gt;&lt;h3 id=&quot;Create-a-new-post&quot;&gt;&lt;a h
       
     
     </summary>
     
       <category term="hexo" scheme="http://yoursite.com/categories/hexo/"/>
     
-    
-      <category term="blog" scheme="http://yoursite.com/tags/blog/"/>
     
       <category term="hexo" scheme="http://yoursite.com/tags/hexo/"/>
     
