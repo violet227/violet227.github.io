@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
-  <title>Thomas&#39;s Blog</title>
+  <title>量子孤岛</title>
   
-  <subtitle>王韬</subtitle>
+  <subtitle>王 韬</subtitle>
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://yoursite.com/"/>
-  <updated>2019-08-03T14:01:27.951Z</updated>
+  <updated>2019-08-22T13:37:45.437Z</updated>
   <id>http://yoursite.com/</id>
   
   <author>
@@ -15,6 +15,32 @@
   </author>
   
   <generator uri="http://hexo.io/">Hexo</generator>
+  
+  <entry>
+    <title>QtMouse</title>
+    <link href="http://yoursite.com/2019/08/22/QtMouse/"/>
+    <id>http://yoursite.com/2019/08/22/QtMouse/</id>
+    <published>2019-08-22T12:21:06.000Z</published>
+    <updated>2019-08-22T13:37:45.437Z</updated>
+    
+    <content type="html"><![CDATA[<h1 id="打地鼠项目"><a class="markdownIt-Anchor" href="#打地鼠项目"></a> 打地鼠项目</h1>]]></content>
+    
+    <summary type="html">
+    
+      
+      
+        &lt;h1 id=&quot;打地鼠项目&quot;&gt;&lt;a class=&quot;markdownIt-Anchor&quot; href=&quot;#打地鼠项目&quot;&gt;&lt;/a&gt; 打地鼠项目&lt;/h1&gt;
+
+      
+    
+    </summary>
+    
+      <category term="Projects" scheme="http://yoursite.com/categories/Projects/"/>
+    
+    
+      <category term="Qt" scheme="http://yoursite.com/tags/Qt/"/>
+    
+  </entry>
   
   <entry>
     <title>pytorch yolo</title>
@@ -51,16 +77,16 @@
     <link href="http://yoursite.com/2019/07/14/YOLO/"/>
     <id>http://yoursite.com/2019/07/14/YOLO/</id>
     <published>2019-07-14T15:14:15.000Z</published>
-    <updated>2019-07-17T07:30:21.736Z</updated>
+    <updated>2019-08-03T15:32:48.520Z</updated>
     
-    <content type="html"><![CDATA[<h1 id="yolo-summary"><a class="markdownIt-Anchor" href="#yolo-summary"></a> YOLO Summary</h1>]]></content>
+    <content type="html"><![CDATA[<h1 id="yolo-笔记"><a class="markdownIt-Anchor" href="#yolo-笔记"></a> YOLO 笔记</h1><p>YOLOv3在预测每个bouding box的objectness score时，使用的是logistic regression。</p><p>与faster rcnn不同的是，我们的系统只会给每个gt object指派一个bounding box。如果没有指派的话，就说明没有对象的box坐标，只有objectness。</p><h2 id="feature-extractor"><a class="markdownIt-Anchor" href="#feature-extractor"></a> Feature Extractor</h2><p>作者使用了一个新的网络模型来提取特征，主要是在Darknet-19中引入了residual network stuff，最终模型的卷积层数达到53层，也就是Darknet-53。</p>]]></content>
     
     <summary type="html">
     
       
       
-        &lt;h1 id=&quot;yolo-summary&quot;&gt;&lt;a class=&quot;markdownIt-Anchor&quot; href=&quot;#yolo-summary&quot;&gt;&lt;/a&gt; YOLO Summary&lt;/h1&gt;
-
+        &lt;h1 id=&quot;yolo-笔记&quot;&gt;&lt;a class=&quot;markdownIt-Anchor&quot; href=&quot;#yolo-笔记&quot;&gt;&lt;/a&gt; YOLO 笔记&lt;/h1&gt;
+&lt;p&gt;YOLOv3在预测每个bouding box的objectness score时，使用的是logistic reg
       
     
     </summary>
