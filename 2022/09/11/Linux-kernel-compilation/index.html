@@ -96,20 +96,21 @@
 
 
 
-  <meta name="description" content="1. 前言 在日常的工作中可能我们会经常遇到程序fork失败的问题。遇到fork失败往往有两种可能性：  进程数超标：可以通过cat /proc/sys/kernel/threads-max查看 内存不足  进程数预设值往往很大，几乎不太能超标，所以fork失败的原因大部分都是由于内存不足造成的。 我们知道，由于MMU实现了虚拟地址到物理地址的转换，所以我们在申请虚拟地址时往往可以申请一大块内存">
-<meta name="keywords" content="Linux内核,overcommit_memory">
+  <meta name="description" content="如何编译并运行Linux系统？  前言  学习Linux内核是一件振奋人心的事情，而在学习伊始对Linux内核的成功编译并运行也更会燃起更足的动力去钻研。本文从下载并编译Linux内核、编译busybox、制作一个最小的根文件系统，最后用qemu启动你编译好的内核和根文件系统 ，初步感受Linux内核的魅力所在。  首先明确两点：  配置内核就是你来决定编码哪些代码； 编译内核就是生成可执行文件">
+<meta name="keywords" content="Linux内核,编译">
 <meta property="og:type" content="article">
-<meta property="og:title" content="什么是overcommit_memory?">
-<meta property="og:url" content="http://yoursite.com/2022/01/23/什么是overcommit-memory/index.html">
+<meta property="og:title" content="如何编译Linux内核源码？">
+<meta property="og:url" content="http://yoursite.com/2022/09/11/Linux-kernel-compilation/index.html">
 <meta property="og:site_name" content="量子孤岛">
-<meta property="og:description" content="1. 前言 在日常的工作中可能我们会经常遇到程序fork失败的问题。遇到fork失败往往有两种可能性：  进程数超标：可以通过cat /proc/sys/kernel/threads-max查看 内存不足  进程数预设值往往很大，几乎不太能超标，所以fork失败的原因大部分都是由于内存不足造成的。 我们知道，由于MMU实现了虚拟地址到物理地址的转换，所以我们在申请虚拟地址时往往可以申请一大块内存">
+<meta property="og:description" content="如何编译并运行Linux系统？  前言  学习Linux内核是一件振奋人心的事情，而在学习伊始对Linux内核的成功编译并运行也更会燃起更足的动力去钻研。本文从下载并编译Linux内核、编译busybox、制作一个最小的根文件系统，最后用qemu启动你编译好的内核和根文件系统 ，初步感受Linux内核的魅力所在。  首先明确两点：  配置内核就是你来决定编码哪些代码； 编译内核就是生成可执行文件">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:image" content="https://cdn.jsdelivr.net/gh/violet227/Images@master/Blog/fork.svg">
-<meta property="og:updated_time" content="2022-01-23T14:58:18.457Z">
+<meta property="og:image" content="https://s1.ax1x.com/2022/09/11/vXCMG9.png">
+<meta property="og:image" content="https://s1.ax1x.com/2022/09/11/vXCgIg.png">
+<meta property="og:updated_time" content="2022-09-11T14:03:46.705Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="什么是overcommit_memory?">
-<meta name="twitter:description" content="1. 前言 在日常的工作中可能我们会经常遇到程序fork失败的问题。遇到fork失败往往有两种可能性：  进程数超标：可以通过cat /proc/sys/kernel/threads-max查看 内存不足  进程数预设值往往很大，几乎不太能超标，所以fork失败的原因大部分都是由于内存不足造成的。 我们知道，由于MMU实现了虚拟地址到物理地址的转换，所以我们在申请虚拟地址时往往可以申请一大块内存">
-<meta name="twitter:image" content="https://cdn.jsdelivr.net/gh/violet227/Images@master/Blog/fork.svg">
+<meta name="twitter:title" content="如何编译Linux内核源码？">
+<meta name="twitter:description" content="如何编译并运行Linux系统？  前言  学习Linux内核是一件振奋人心的事情，而在学习伊始对Linux内核的成功编译并运行也更会燃起更足的动力去钻研。本文从下载并编译Linux内核、编译busybox、制作一个最小的根文件系统，最后用qemu启动你编译好的内核和根文件系统 ，初步感受Linux内核的魅力所在。  首先明确两点：  配置内核就是你来决定编码哪些代码； 编译内核就是生成可执行文件">
+<meta name="twitter:image" content="https://s1.ax1x.com/2022/09/11/vXCMG9.png">
 
 
 
@@ -118,7 +119,7 @@
 
 
 
-  <link rel="canonical" href="http://yoursite.com/2022/01/23/什么是overcommit-memory/">
+  <link rel="canonical" href="http://yoursite.com/2022/09/11/Linux-kernel-compilation/">
 
 
 
@@ -128,7 +129,7 @@
   };
 </script>
 
-  <title>什么是overcommit_memory? | 量子孤岛</title>
+  <title>如何编译Linux内核源码？ | 量子孤岛</title>
   
 
 
@@ -360,7 +361,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2022/01/23/什么是overcommit-memory/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2022/09/11/Linux-kernel-compilation/">
 
     <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
       <meta itemprop="name" content="孤岛violet">
@@ -377,7 +378,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">什么是overcommit_memory?
+          <h1 class="post-title" itemprop="name headline">如何编译Linux内核源码？
 
               
             
@@ -403,7 +404,7 @@
                 
               
 
-              <time title="创建时间：2022-01-23 16:19:44 / 修改时间：22:58:18" itemprop="dateCreated datePublished" datetime="2022-01-23T16:19:44+08:00">2022-01-23</time>
+              <time title="创建时间：2022-09-11 21:49:13 / 修改时间：22:03:46" itemprop="dateCreated datePublished" datetime="2022-09-11T21:49:13+08:00">2022-09-11</time>
             
 
             
@@ -495,74 +496,91 @@
       
 
       
-        <h3 id="1-前言"><a class="markdownIt-Anchor" href="#1-前言"></a> 1. 前言</h3>
-<p>在日常的工作中可能我们会经常遇到程序fork失败的问题。遇到fork失败往往有两种可能性：</p>
+        <h1 id="如何编译并运行linux系统"><a class="markdownIt-Anchor" href="#如何编译并运行linux系统"></a> 如何编译并运行Linux系统？</h1>
+<h2 id="前言"><a class="markdownIt-Anchor" href="#前言"></a> <strong>前言</strong></h2>
+<blockquote>
+<p>学习Linux内核是一件振奋人心的事情，而在学习伊始对Linux内核的成功编译并运行也更会燃起更足的动力去钻研。本文从下载并编译Linux内核、编译busybox、制作一个最小的根文件系统，最后用qemu启动你编译好的内核和根文件系统 ，初步感受Linux内核的魅力所在。</p>
+</blockquote>
+<p><strong>首先明确两点：</strong></p>
 <ol>
-<li>进程数超标：可以通过<code>cat /proc/sys/kernel/threads-max</code>查看</li>
-<li>内存不足</li>
+<li>配置内核就是你来决定编码哪些代码；</li>
+<li>编译内核就是生成可执行文件的一个过程。</li>
 </ol>
-<p>进程数预设值往往很大，几乎不太能超标，所以fork失败的原因大部分都是由于内存不足造成的。</p>
-<p>我们知道，由于MMU实现了虚拟地址到物理地址的转换，所以我们在申请虚拟地址时往往可以申请一大块内存，这实际上是对资源的有效利用，毕竟只有内存真正被投入使用时（如memset）才会实际分配物理内存，这种允许内存超额commit的机制就是overcommit_memory。</p>
-<p>虚拟内存需要物理内存作为支撑，当分配了太多虚拟内存，导致物理内存不够时，就发生了Out Of Memory。这种允许超额commit的机制就是<strong>overcommit</strong>。</p>
-<p>其调用链关系如下图所示。</p>
-<p><img src="https://cdn.jsdelivr.net/gh/violet227/Images@master/Blog/fork.svg" alt="fork"></p>
-<p>从图中我们可以看到，fork一步一步执行到了<code>__vm_enough_memory</code>，该接口是overcommit的核心。</p>
-<h3 id="2-原理"><a class="markdownIt-Anchor" href="#2-原理"></a> 2. 原理</h3>
-<p>Linux根据参数<code>vm.overcommit_memory</code>设置overcommit：</p>
+<p><strong>再明确内核文件的产物名称：</strong></p>
 <ul>
-<li><strong>0</strong> ——默认值，启发式overcommit，它允许overcommit，但太明显的overcommit会被拒绝，比如malloc一次性申请的内存大小就超过了系统总内存。</li>
-<li><strong>1</strong> ——Always overcommit. 允许<code>overcommit</code>，对内存申请来者不拒。</li>
-<li><strong>2</strong> ——不允许<code>overcommit</code>，提交给系统的总地址空间大小不允许超过。</li>
+<li>vmlinux：原始的，未经压缩的内核可执行文件</li>
+<li>zImage：压缩过的可执行文件——压缩vmlinux后，加上一个head part（用来解压）</li>
+<li>uImage：用于给uboot引导的zImage</li>
+<li>bzImage：即bigzImage ，通过gzip压缩的</li>
 </ul>
-<p><code>include/uapi/linux/mman.h</code>中声明了该宏定义：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">define</span> OVERCOMMIT_GUESS		0</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> OVERCOMMIT_ALWAYS		1</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> OVERCOMMIT_NEVER		2</span></span><br></pre></td></tr></table></figure>
-<p><strong>当<code>sysctl_overcommit_memory</code>等于<code>OVERCOMMIT_ALWAYS</code>时，内核的处理方式是直接返回。</strong></p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (sysctl_overcommit_memory == OVERCOMMIT_ALWAYS)</span><br><span class="line">		<span class="keyword">return</span> <span class="number">0</span>;</span><br></pre></td></tr></table></figure>
-<hr>
-<p><strong>当<code>sysctl_overcommit_memory</code>等于<code>OVERCOMMIT_GUESS</code>时</strong>，主要代码如下：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">if</span> (sysctl_overcommit_memory == OVERCOMMIT_GUESS) &#123;</span><br><span class="line">		<span class="built_in">free</span> = global_page_state(NR_FREE_PAGES);</span><br><span class="line">		<span class="built_in">free</span> += global_node_page_state(NR_FILE_PAGES);</span><br><span class="line">		<span class="built_in">free</span> -= global_node_page_state(NR_SHMEM);</span><br><span class="line">		<span class="built_in">free</span> += get_nr_swap_pages();</span><br><span class="line">		<span class="built_in">free</span> += global_page_state(NR_SLAB_RECLAIMABLE);</span><br><span class="line"></span><br><span class="line">		<span class="keyword">if</span> (<span class="built_in">free</span> &lt;= totalreserve_pages)</span><br><span class="line">			<span class="keyword">goto</span> error;</span><br><span class="line">		<span class="keyword">else</span></span><br><span class="line">			<span class="built_in">free</span> -= totalreserve_pages;</span><br><span class="line">    </span><br><span class="line">		<span class="keyword">if</span> (!cap_sys_admin)</span><br><span class="line">			<span class="built_in">free</span> -= sysctl_admin_reserve_kbytes &gt;&gt; (PAGE_SHIFT - <span class="number">10</span>); <span class="comment">/* 为root保留的页数 */</span></span><br><span class="line"></span><br><span class="line">		<span class="keyword">if</span> (<span class="built_in">free</span> &gt; pages)</span><br><span class="line">			<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line"></span><br><span class="line">		<span class="keyword">goto</span> error;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>其中<code>global_page_state</code>负责读取vm_zone_stat数组中的各项值。</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">extern</span> <span class="keyword">atomic_long_t</span> vm_zone_stat[NR_VM_ZONE_STAT_ITEMS];</span><br></pre></td></tr></table></figure>
+<p>好了，明确了上述几点，就可以开始实验了。本文的实验环境如下：</p>
 <ul>
-<li><code>NR_FREE_PAGES</code>：富足的未分配资源；</li>
-<li><code>NR_FILE_PAGES</code>：page cache总和；</li>
-<li><code>NR_SHMEM</code>：进程间的share memory；</li>
-<li><code>NR_SLAB_RECLAIMABLE</code>：slab可回收的页数；</li>
-<li><code>totalreserve_pages</code>：每个zone保留的不能被用户空间分配的页数；</li>
-<li><code>get_nr_swap_pages</code>：针对空闲的swap页数</li>
+<li>Linux系统：ubuntu 20.04</li>
+<li>linux源码版本：linux-4.9.229</li>
+<li>busybox源码版本：busybox-1.30.0</li>
+<li>qemu-system-x86_64版本：2.0.0</li>
 </ul>
-<p>所以free的计算公式如下：</p>
-<p><code>free = NR_FREE_PAGES + NR_FILE_PAGES - NR_SHMEM + swap_pages + NR_SLAB_RECLAIMABLE</code></p>
-<p>如果此时free小于<code>totalreserve_pages</code>，则判定内存不足，否则 <code>free -= totalreserve_pages</code>.</p>
-<p>如果是普通进程，则还需要保留<code>admin_reserve_kbytes</code>（/proc/sys/vm/admin_reserve_kbytes）的free page.</p>
-<p>此时free若大于申请的pages，则不会发生overcommit。</p>
-<hr>
-<p><strong>当<code>sysctl_overcommit_memory</code>等于<code>OVERCOMMIT_NEVER</code>时</strong>，相关代码如下：</p>
-<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><span class="line">allowed = vm_commit_limit();</span><br><span class="line"></span><br><span class="line">	<span class="keyword">if</span> (!cap_sys_admin)</span><br><span class="line">		allowed -= sysctl_admin_reserve_kbytes &gt;&gt; (PAGE_SHIFT - <span class="number">10</span>);</span><br><span class="line"></span><br><span class="line">	<span class="keyword">if</span> (mm) &#123;</span><br><span class="line">		reserve = sysctl_user_reserve_kbytes &gt;&gt; (PAGE_SHIFT - <span class="number">10</span>);</span><br><span class="line">		allowed -= <span class="keyword">min_t</span>(<span class="keyword">long</span>, mm-&gt;total_vm / <span class="number">32</span>, reserve);</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">if</span> (percpu_counter_read_positive(&amp;vm_committed_as) &lt; allowed)</span><br><span class="line">		<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">error:</span><br><span class="line">	vm_unacct_memory(pages);</span><br><span class="line"></span><br><span class="line">	<span class="keyword">return</span> -ENOMEM;</span><br><span class="line"></span><br><span class="line"><span class="comment">/////////////////////////////////////////////////////////////////</span></span><br><span class="line"><span class="function"><span class="keyword">unsigned</span> <span class="keyword">long</span> <span class="title">vm_commit_limit</span><span class="params">(<span class="keyword">void</span>)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="keyword">unsigned</span> <span class="keyword">long</span> allowed;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">if</span> (sysctl_overcommit_kbytes)</span><br><span class="line">		allowed = sysctl_overcommit_kbytes &gt;&gt; (PAGE_SHIFT - <span class="number">10</span>);</span><br><span class="line">	<span class="keyword">else</span></span><br><span class="line">		allowed = ((totalram_pages - hugetlb_total_pages())</span><br><span class="line">			   * sysctl_overcommit_ratio / <span class="number">100</span>);</span><br><span class="line">	allowed += total_swap_pages;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">return</span> allowed;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-<p>主要看如下值：</p>
-<ul>
-<li><code>sysctl_overcommit_kbytes</code>：/proc/sys/vm/overcommit_kbytes的值</li>
-<li><code>sysctl_overcommit_ratio</code>：/proc/sys/vm/overcommit_ratio的值</li>
-<li><code>totalram_pages</code>:可分配的总页数</li>
-<li><code>total_swap_pages</code>：可换出的页数</li>
-<li><code>hugetlb_total_pages</code>：huge page相关</li>
-<li><code>sysctl_user_reserve_kbytes</code>：/proc/sys/vm/user_reserve_kbytes的值，用户空间保留的内存大小</li>
-<li><code>vm_committed_as</code>：保存了当前系统中已经申请的虚拟内存大小</li>
-</ul>
-<p>由代码可知，<code>vm_commit_limit</code>包括两种情况：</p>
+<p><strong>实验目标</strong>：</p>
 <ol>
-<li>如果<code>overcommit_kbytes</code>不为0， allow值为<code>overcommit_kbytes</code>的一半；</li>
-<li>如果<code>overcommit_kbytes</code>为0，allow值为可管理的总内存与<code>vercommit_ratio</code>的乘积百分比</li>
+<li>编译Linux内核源码</li>
+<li>编译busybox</li>
+<li>制作一个简版文件系统</li>
+<li>制作根文件系统镜像文件</li>
+<li>利用qemu运行linux内核</li>
 </ol>
-<h3 id="3-设置"><a class="markdownIt-Anchor" href="#3-设置"></a> 3. 设置</h3>
-<p>那么如何设置overcommit的值呢？有三种方法：</p>
+<h2 id="1下载并编译linux内核"><a class="markdownIt-Anchor" href="#1下载并编译linux内核"></a> <strong>1.下载并编译Linux内核</strong></h2>
+<p><a href="https://link.zhihu.com/?target=https%3A//mirrors.edge.kernel.org/pub/linux/kernel/v4.x/" target="_blank" rel="noopener"><strong>Index of /pub/linux/kernel/v4.x/mirrors.edge.kernel.org/pub/linux/kernel/v4.x/</strong></a></p>
+<p>下载并解压后，进入目录。</p>
+<h3 id="1指定硬件体系架构"><a class="markdownIt-Anchor" href="#1指定硬件体系架构"></a> <strong>1.指定硬件体系架构</strong></h3>
+<p>为了演示方便，选用了x86架构，如果编译arm则需要再下载对应的toolchain。</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ <span class="builtin-name">export</span> <span class="attribute">ARCH</span>=x86</span><br></pre></td></tr></table></figure>
+<h3 id="2配置board-config"><a class="markdownIt-Anchor" href="#2配置board-config"></a> <strong>2.配置board config</strong></h3>
+<figure class="highlight elixir"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable">$ </span>make  x86_64_defconfig</span><br></pre></td></tr></table></figure>
+<h3 id="3配置内核"><a class="markdownIt-Anchor" href="#3配置内核"></a> <strong>3.配置内核</strong></h3>
+<p>这一步其实是对第2步的进行微调，这里我们使用基于ncurse库编制的图形界面工具：</p>
+<figure class="highlight elixir"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable">$ </span>make menuconfig</span><br></pre></td></tr></table></figure>
+<p>如果执行该命令时出现：</p>
+<p><a href="https://imgse.com/i/vXCMG9" target="_blank" rel="noopener"><img src="https://s1.ax1x.com/2022/09/11/vXCMG9.png" alt="vXCMG9.png"></a></p>
+<p>原因：<strong>缺少ncurses dev工具</strong></p>
+<figure class="highlight q"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo apt-<span class="built_in">get</span> install libncurses5-<span class="built_in">dev</span></span><br></pre></td></tr></table></figure>
+<p>如果需要内核支持ramdisk驱动，需要选中如下配置：</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">General setup  ---&gt;</span><br><span class="line">       ----&gt; [*] Initial RAM filesystem <span class="keyword">and</span> RAM disk (initramfs/initrd) support</span><br><span class="line">    Device Drivers  ---&gt;</span><br><span class="line">       [*] Block devices  ---&gt;</span><br><span class="line">               &lt;*&gt;   RAM block device support</span><br><span class="line">               (65536)<span class="built_in"> Default </span>RAM disk size (kbytes)</span><br></pre></td></tr></table></figure>
+<h3 id="4编译内核"><a class="markdownIt-Anchor" href="#4编译内核"></a> <strong>4.编译内核</strong></h3>
+<figure class="highlight elixir"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable">$ </span>make -j8</span><br></pre></td></tr></table></figure>
+<p>编译成功后的内核位于：arch/x86_64/boot/bzImage</p>
+<p>至此，内核编译完成。</p>
+<h2 id="2-编译busybox"><a class="markdownIt-Anchor" href="#2-编译busybox"></a> <strong>2. 编译busybox</strong></h2>
+<p>什么是busybox？</p>
+<p>busybox号称“嵌入式Linux的瑞士军刀”。BusyBox工具小巧高效，可以替代一大批常用的标准Linux命令行工具，功能有所简化，非常适合资源有限的嵌入式平台。BusyBox是模块化且高度可配置的，可以对其进行裁剪以满足特定需求。</p>
+<p>在如下链接下载busybox：</p>
+<p><a href="https://link.zhihu.com/?target=https%3A//busybox.net/downloads/" target="_blank" rel="noopener"><strong>https://busybox.net/downloads/busybox.net/downloads/</strong></a></p>
+<p>我们以busybox-1.30.0作为实验对象。</p>
+<p>下载之后解压并进入该busybox目录开始配置并编译。这里把busybox配置为静态编译，这样不依赖其他动态库比较容易操作和演示。编译则似曾相识，与编译内核的指令是一样的！</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">$ make menuconfig</span><br><span class="line"></span><br><span class="line">Busybox<span class="built_in"> Settings </span> ---&gt;</span><br><span class="line">      Build Options  ---&gt;</span><br><span class="line">            [*] Build BusyBox as a static binary (<span class="literal">no</span> shared libs)</span><br></pre></td></tr></table></figure>
+<p>配置完之后进行编译和安装</p>
+<figure class="highlight gauss"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ <span class="built_in">make</span> &amp;&amp; <span class="built_in">make</span> install</span><br></pre></td></tr></table></figure>
+<p>make是编译busybox，make install是为了在对应目录中编译安装一系列的工具。</p>
+<p>编译完成后的busybox就安装在源码根目录下的_install目录了。</p>
+<p>至此，我们对Linux内核和busybox进行了配置和编译。光编译肯定不过瘾，接下来演示基于busybox制作一个简单的文件系统，并通过qemu模拟器运行Linux，真正的让内核工作起来！</p>
+<h2 id="3-制作一个简版文件系统"><a class="markdownIt-Anchor" href="#3-制作一个简版文件系统"></a> 3. 制作一个简版文件系统</h2>
+<p>编译完成后的busybox就安装在源码根目录下的_install目录了，我们进入_install目录，补充一些必要的文件或目录，相关的shell命令如下：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> mkdir -p etc dev mnt proc sys tmp mnt</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> mkdir -p etc/init.d/</span></span><br><span class="line"></span><br><span class="line"><span class="meta">$</span><span class="bash"> mkdir etc dev mnt</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> mkdir -p proc sys tmp mnt</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> mkdir -p etc/init.d/</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> vim etc/fstab</span></span><br><span class="line">proc        /proc           proc         defaults        0        0</span><br><span class="line">tmpfs       /tmp            tmpfs      defaults        0        0</span><br><span class="line">sysfs       /sys            sysfs        defaults        0        0</span><br><span class="line"><span class="meta">$</span><span class="bash"> vim etc/init.d/rcS</span></span><br><span class="line">echo -e "Welcome to tinyLinux"</span><br><span class="line">/bin/mount -a</span><br><span class="line">echo -e "Remounting the root filesystem"</span><br><span class="line">mount  -o  remount,rw  /</span><br><span class="line">mkdir -p /dev/pts</span><br><span class="line">mount -t devpts devpts /dev/pts</span><br><span class="line">echo /sbin/mdev &gt; /proc/sys/kernel/hotplug</span><br><span class="line">mdev -s</span><br><span class="line"><span class="meta">$</span><span class="bash"> chmod 755 etc/init.d/rcS</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> vim etc/inittab</span></span><br><span class="line">::sysinit:/etc/init.d/rcS</span><br><span class="line">::respawn:-/bin/sh</span><br><span class="line">::askfirst:-/bin/sh</span><br><span class="line">::ctrlaltdel:/bin/umount -a -r</span><br><span class="line"><span class="meta">$</span><span class="bash"> chmod 755 etc/inittab</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> <span class="built_in">cd</span> dev</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> sudo mknod console c 5 1</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> sudo mknod null c 1 3</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> sudo mknod tty1 c 4 1</span></span><br></pre></td></tr></table></figure>
+<h2 id="4-制作根文件系统镜像文件"><a class="markdownIt-Anchor" href="#4-制作根文件系统镜像文件"></a> 4. <strong>制作根文件系统镜像文件</strong></h2>
+<p>思路：</p>
 <ol>
-<li>编辑**/etc/sysctl.conf** ，改<strong>vm.overcommit_memory=1</strong>，然后<strong>sysctl -p</strong>使配置文件生效</li>
-<li>sysctl vm.overcommit_memory=1</li>
-<li>echo 1 &gt; /proc/sys/vm/overcommit_memory</li>
+<li>先制作一个空的镜像文件；</li>
+<li>然后把此镜像文件格式化为ext3格式</li>
+<li>接着把此镜像文件挂载，并把根文件系统复制到挂载目录</li>
+<li>卸载该镜像文件。</li>
+<li>打成gzip包。</li>
 </ol>
-<h4 id="4-总结"><a class="markdownIt-Anchor" href="#4-总结"></a> 4. 总结</h4>
-<p>本文通过分析内核代码粗略得分析了overcommit_memory的原理，也为后面的OOM-killer的原理做个铺垫。</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash">!/bin/bash</span></span><br><span class="line">rm -rf rootfs.ext3</span><br><span class="line">rm -rf fs</span><br><span class="line">dd if=/dev/zero of=./rootfs.ext3 bs=1M count=32</span><br><span class="line">mkfs.ext3 rootfs.ext3</span><br><span class="line">mkdir fs</span><br><span class="line">mount -o loop rootfs.ext3 ./fs</span><br><span class="line">cp -rf ./_install/* ./fs</span><br><span class="line">umount ./fs</span><br><span class="line">gzip --best -c rootfs.ext3 &gt; rootfs.img.gz</span><br></pre></td></tr></table></figure>
+<p>最终生成的文件系统镜像名字为：<code>rootfs.img.gz</code></p>
+<p>准备好了内核和文件系统镜像，接下来就是见证奇迹的时刻！</p>
+<h2 id="5-qemu运行linux内核"><a class="markdownIt-Anchor" href="#5-qemu运行linux内核"></a> 5. qemu运行linux内核</h2>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> qemu-system-x86_64 \</span></span><br><span class="line">  -kernel ./linux-4.9.229/arch/x86_64/boot/bzImage  \</span><br><span class="line">  -initrd ./busybox-1.30.0/rootfs.img.gz   \</span><br><span class="line">  -append "root=/dev/ram init=/linuxrc"  \</span><br><span class="line">-serial file:output.txt</span><br></pre></td></tr></table></figure>
+<p><a href="https://imgse.com/i/vXCgIg" target="_blank" rel="noopener"><img src="https://s1.ax1x.com/2022/09/11/vXCgIg.png" alt="vXCgIg.png"></a></p>
+<p>这样一个完整的Linux系统就起来啦!</p>
 
       
     </div>
@@ -591,12 +609,12 @@
   <!-- JS库 sweetalert 可修改路径 -->
   <script src="https://cdn.bootcss.com/jquery/2.0.0/jquery.min.js"></script>
   <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
-  <p><span>本文标题:</span><a href="/2022/01/23/什么是overcommit-memory/">什么是overcommit_memory?</a></p>
+  <p><span>本文标题:</span><a href="/2022/09/11/Linux-kernel-compilation/">如何编译Linux内核源码？</a></p>
   <p><span>文章作者:</span><a href="/" title="访问 孤岛violet 的个人博客">孤岛violet</a></p>
-  <p><span>发布时间:</span>2022年01月23日 - 16:19</p>
-  <p><span>最后更新:</span>2022年01月23日 - 22:58</p>
-  <p><span>原始链接:</span><a href="/2022/01/23/什么是overcommit-memory/" title="什么是overcommit_memory?">http://yoursite.com/2022/01/23/什么是overcommit-memory/</a>
-    <span class="copy-path" title="点击复制文章链接"><i class="fa fa-clipboard" data-clipboard-text="http://yoursite.com/2022/01/23/什么是overcommit-memory/" aria-label="复制成功！"></i></span>
+  <p><span>发布时间:</span>2022年09月11日 - 21:49</p>
+  <p><span>最后更新:</span>2022年09月11日 - 22:03</p>
+  <p><span>原始链接:</span><a href="/2022/09/11/Linux-kernel-compilation/" title="如何编译Linux内核源码？">http://yoursite.com/2022/09/11/Linux-kernel-compilation/</a>
+    <span class="copy-path" title="点击复制文章链接"><i class="fa fa-clipboard" data-clipboard-text="http://yoursite.com/2022/09/11/Linux-kernel-compilation/" aria-label="复制成功！"></i></span>
   </p>
   <p><span>许可协议:</span><i class="fa fa-creative-commons"></i> <a rel="license" href="https://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank" title="Attribution-NonCommercial-NoDerivatives 4.0 International (CC BY-NC-ND 4.0)">署名-非商业性使用-禁止演绎 4.0 国际</a> 转载请保留原文链接及作者。</p>  
 </div>
@@ -633,7 +651,7 @@
           
             <a href="/tags/Linux内核/" rel="tag"><i class="fa fa-tag"></i> Linux内核</a>
           
-            <a href="/tags/overcommit-memory/" rel="tag"><i class="fa fa-tag"></i> overcommit_memory</a>
+            <a href="/tags/编译/" rel="tag"><i class="fa fa-tag"></i> 编译</a>
           
         </div>
       
@@ -646,8 +664,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2019/06/08/Automatic-Indium-Packaging-Device-and-Its-Control-System/" rel="next" title="Automatic Indium Packaging Device and Its Control System">
-                <i class="fa fa-chevron-left"></i> Automatic Indium Packaging Device and Its Control System
+              <a href="/2022/08/07/Linux内存管理模型/" rel="next" title="Linux物理内存模型">
+                <i class="fa fa-chevron-left"></i> Linux物理内存模型
               </a>
             
           </div>
@@ -655,10 +673,6 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2022/08/07/Linux内存管理模型/" rel="prev" title="Linux物理内存模型">
-                Linux物理内存模型 <i class="fa fa-chevron-right"></i>
-              </a>
             
           </div>
         </div>
@@ -933,7 +947,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-前言"><span class="nav-number">1.</span> <span class="nav-text"> 1. 前言</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-原理"><span class="nav-number">2.</span> <span class="nav-text"> 2. 原理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-设置"><span class="nav-number">3.</span> <span class="nav-text"> 3. 设置</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#4-总结"><span class="nav-number">3.1.</span> <span class="nav-text"> 4. 总结</span></a></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#如何编译并运行linux系统"><span class="nav-number">1.</span> <span class="nav-text"> 如何编译并运行Linux系统？</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#前言"><span class="nav-number">1.1.</span> <span class="nav-text"> 前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1下载并编译linux内核"><span class="nav-number">1.2.</span> <span class="nav-text"> 1.下载并编译Linux内核</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1指定硬件体系架构"><span class="nav-number">1.2.1.</span> <span class="nav-text"> 1.指定硬件体系架构</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2配置board-config"><span class="nav-number">1.2.2.</span> <span class="nav-text"> 2.配置board config</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3配置内核"><span class="nav-number">1.2.3.</span> <span class="nav-text"> 3.配置内核</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4编译内核"><span class="nav-number">1.2.4.</span> <span class="nav-text"> 4.编译内核</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-编译busybox"><span class="nav-number">1.3.</span> <span class="nav-text"> 2. 编译busybox</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-制作一个简版文件系统"><span class="nav-number">1.4.</span> <span class="nav-text"> 3. 制作一个简版文件系统</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-制作根文件系统镜像文件"><span class="nav-number">1.5.</span> <span class="nav-text"> 4. 制作根文件系统镜像文件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-qemu运行linux内核"><span class="nav-number">1.6.</span> <span class="nav-text"> 5. qemu运行linux内核</span></a></li></ol></li></ol></div>
             
 
           </div>
