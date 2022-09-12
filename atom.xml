@@ -6,7 +6,7 @@
   <link href="/atom.xml" rel="self"/>
   
   <link href="http://yoursite.com/"/>
-  <updated>2022-09-11T14:03:46.705Z</updated>
+  <updated>2022-09-12T13:54:45.831Z</updated>
   <id>http://yoursite.com/</id>
   
   <author>
@@ -17,11 +17,39 @@
   <generator uri="http://hexo.io/">Hexo</generator>
   
   <entry>
+    <title>Linux kernel中.o文件的编译过程</title>
+    <link href="http://yoursite.com/2022/09/12/compile-obj-file/"/>
+    <id>http://yoursite.com/2022/09/12/compile-obj-file/</id>
+    <published>2022-09-12T13:43:07.000Z</published>
+    <updated>2022-09-12T13:54:45.831Z</updated>
+    
+    <content type="html"><![CDATA[<h1 id="linux-kernel中o文件的编译过程"><a class="markdownIt-Anchor" href="#linux-kernel中o文件的编译过程"></a> Linux kernel中.o文件的编译过程</h1>]]></content>
+    
+    <summary type="html">
+    
+      
+      
+        &lt;h1 id=&quot;linux-kernel中o文件的编译过程&quot;&gt;&lt;a class=&quot;markdownIt-Anchor&quot; href=&quot;#linux-kernel中o文件的编译过程&quot;&gt;&lt;/a&gt; Linux kernel中.o文件的编译过程&lt;/h1&gt;
+
+      
+    
+    </summary>
+    
+      <category term="Linux内核" scheme="http://yoursite.com/categories/Linux%E5%86%85%E6%A0%B8/"/>
+    
+    
+      <category term="Linux内核" scheme="http://yoursite.com/tags/Linux%E5%86%85%E6%A0%B8/"/>
+    
+      <category term="编译" scheme="http://yoursite.com/tags/%E7%BC%96%E8%AF%91/"/>
+    
+  </entry>
+  
+  <entry>
     <title>如何编译Linux内核源码？</title>
     <link href="http://yoursite.com/2022/09/11/Linux-kernel-compilation/"/>
     <id>http://yoursite.com/2022/09/11/Linux-kernel-compilation/</id>
     <published>2022-09-11T13:49:13.000Z</published>
-    <updated>2022-09-11T14:03:46.705Z</updated>
+    <updated>2022-09-11T14:35:32.789Z</updated>
     
     <content type="html"><![CDATA[<h1 id="如何编译并运行linux系统"><a class="markdownIt-Anchor" href="#如何编译并运行linux系统"></a> 如何编译并运行Linux系统？</h1><h2 id="前言"><a class="markdownIt-Anchor" href="#前言"></a> <strong>前言</strong></h2><blockquote><p>学习Linux内核是一件振奋人心的事情，而在学习伊始对Linux内核的成功编译并运行也更会燃起更足的动力去钻研。本文从下载并编译Linux内核、编译busybox、制作一个最小的根文件系统，最后用qemu启动你编译好的内核和根文件系统 ，初步感受Linux内核的魅力所在。</p></blockquote><p><strong>首先明确两点：</strong></p><ol><li>配置内核就是你来决定编码哪些代码；</li><li>编译内核就是生成可执行文件的一个过程。</li></ol><p><strong>再明确内核文件的产物名称：</strong></p><ul><li>vmlinux：原始的，未经压缩的内核可执行文件</li><li>zImage：压缩过的可执行文件——压缩vmlinux后，加上一个head part（用来解压）</li><li>uImage：用于给uboot引导的zImage</li><li>bzImage：即bigzImage ，通过gzip压缩的</li></ul><p>好了，明确了上述几点，就可以开始实验了。本文的实验环境如下：</p><ul><li>Linux系统：ubuntu 20.04</li><li>linux源码版本：linux-4.9.229</li><li>busybox源码版本：busybox-1.30.0</li><li>qemu-system-x86_64版本：2.0.0</li></ul><p><strong>实验目标</strong>：</p><ol><li>编译Linux内核源码</li><li>编译busybox</li><li>制作一个简版文件系统</li><li>制作根文件系统镜像文件</li><li>利用qemu运行linux内核</li></ol><h2 id="1下载并编译linux内核"><a class="markdownIt-Anchor" href="#1下载并编译linux内核"></a> <strong>1.下载并编译Linux内核</strong></h2><p><a href="https://link.zhihu.com/?target=https%3A//mirrors.edge.kernel.org/pub/linux/kernel/v4.x/" target="_blank" rel="noopener"><strong>Index of /pub/linux/kernel/v4.x/mirrors.edge.kernel.org/pub/linux/kernel/v4.x/</strong></a></p><p>下载并解压后，进入目录。</p><h3 id="1指定硬件体系架构"><a class="markdownIt-Anchor" href="#1指定硬件体系架构"></a> <strong>1.指定硬件体系架构</strong></h3><p>为了演示方便，选用了x86架构，如果编译arm则需要再下载对应的toolchain。</p><figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ <span class="builtin-name">export</span> <span class="attribute">ARCH</span>=x86</span><br></pre></td></tr></table></figure><h3 id="2配置board-config"><a class="markdownIt-Anchor" href="#2配置board-config"></a> <strong>2.配置board config</strong></h3><figure class="highlight elixir"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable">$ </span>make  x86_64_defconfig</span><br></pre></td></tr></table></figure><h3 id="3配置内核"><a class="markdownIt-Anchor" href="#3配置内核"></a> <strong>3.配置内核</strong></h3><p>这一步其实是对第2步的进行微调，这里我们使用基于ncurse库编制的图形界面工具：</p><figure class="highlight elixir"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable">$ </span>make menuconfig</span><br></pre></td></tr></table></figure><p>如果执行该命令时出现：</p><p><a href="https://imgse.com/i/vXCMG9" target="_blank" rel="noopener"><img src="https://s1.ax1x.com/2022/09/11/vXCMG9.png" alt="vXCMG9.png"></a></p><p>原因：<strong>缺少ncurses dev工具</strong></p><figure class="highlight q"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo apt-<span class="built_in">get</span> install libncurses5-<span class="built_in">dev</span></span><br></pre></td></tr></table></figure><p>如果需要内核支持ramdisk驱动，需要选中如下配置：</p><figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">General setup  ---&gt;</span><br><span class="line">       ----&gt; [*] Initial RAM filesystem <span class="keyword">and</span> RAM disk (initramfs/initrd) support</span><br><span class="line">    Device Drivers  ---&gt;</span><br><span class="line">       [*] Block devices  ---&gt;</span><br><span class="line">               &lt;*&gt;   RAM block device support</span><br><span class="line">               (65536)<span class="built_in"> Default </span>RAM disk size (kbytes)</span><br></pre></td></tr></table></figure><h3 id="4编译内核"><a class="markdownIt-Anchor" href="#4编译内核"></a> <strong>4.编译内核</strong></h3><figure class="highlight elixir"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable">$ </span>make -j8</span><br></pre></td></tr></table></figure><p>编译成功后的内核位于：arch/x86_64/boot/bzImage</p><p>至此，内核编译完成。</p><h2 id="2-编译busybox"><a class="markdownIt-Anchor" href="#2-编译busybox"></a> <strong>2. 编译busybox</strong></h2><p>什么是busybox？</p><p>busybox号称“嵌入式Linux的瑞士军刀”。BusyBox工具小巧高效，可以替代一大批常用的标准Linux命令行工具，功能有所简化，非常适合资源有限的嵌入式平台。BusyBox是模块化且高度可配置的，可以对其进行裁剪以满足特定需求。</p><p>在如下链接下载busybox：</p><p><a href="https://link.zhihu.com/?target=https%3A//busybox.net/downloads/" target="_blank" rel="noopener"><strong>https://busybox.net/downloads/busybox.net/downloads/</strong></a></p><p>我们以busybox-1.30.0作为实验对象。</p><p>下载之后解压并进入该busybox目录开始配置并编译。这里把busybox配置为静态编译，这样不依赖其他动态库比较容易操作和演示。编译则似曾相识，与编译内核的指令是一样的！</p><figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">$ make menuconfig</span><br><span class="line"></span><br><span class="line">Busybox<span class="built_in"> Settings </span> ---&gt;</span><br><span class="line">      Build Options  ---&gt;</span><br><span class="line">            [*] Build BusyBox as a static binary (<span class="literal">no</span> shared libs)</span><br></pre></td></tr></table></figure><p>配置完之后进行编译和安装</p><figure class="highlight gauss"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ <span class="built_in">make</span> &amp;&amp; <span class="built_in">make</span> install</span><br></pre></td></tr></table></figure><p>make是编译busybox，make install是为了在对应目录中编译安装一系列的工具。</p><p>编译完成后的busybox就安装在源码根目录下的_install目录了。</p><p>至此，我们对Linux内核和busybox进行了配置和编译。光编译肯定不过瘾，接下来演示基于busybox制作一个简单的文件系统，并通过qemu模拟器运行Linux，真正的让内核工作起来！</p><h2 id="3-制作一个简版文件系统"><a class="markdownIt-Anchor" href="#3-制作一个简版文件系统"></a> 3. 制作一个简版文件系统</h2><p>编译完成后的busybox就安装在源码根目录下的_install目录了，我们进入_install目录，补充一些必要的文件或目录，相关的shell命令如下：</p><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> mkdir -p etc dev mnt proc sys tmp mnt</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> mkdir -p etc/init.d/</span></span><br><span class="line"></span><br><span class="line"><span class="meta">$</span><span class="bash"> mkdir etc dev mnt</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> mkdir -p proc sys tmp mnt</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> mkdir -p etc/init.d/</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> vim etc/fstab</span></span><br><span class="line">proc        /proc           proc         defaults        0        0</span><br><span class="line">tmpfs       /tmp            tmpfs      defaults        0        0</span><br><span class="line">sysfs       /sys            sysfs        defaults        0        0</span><br><span class="line"><span class="meta">$</span><span class="bash"> vim etc/init.d/rcS</span></span><br><span class="line">echo -e "Welcome to tinyLinux"</span><br><span class="line">/bin/mount -a</span><br><span class="line">echo -e "Remounting the root filesystem"</span><br><span class="line">mount  -o  remount,rw  /</span><br><span class="line">mkdir -p /dev/pts</span><br><span class="line">mount -t devpts devpts /dev/pts</span><br><span class="line">echo /sbin/mdev &gt; /proc/sys/kernel/hotplug</span><br><span class="line">mdev -s</span><br><span class="line"><span class="meta">$</span><span class="bash"> chmod 755 etc/init.d/rcS</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> vim etc/inittab</span></span><br><span class="line">::sysinit:/etc/init.d/rcS</span><br><span class="line">::respawn:-/bin/sh</span><br><span class="line">::askfirst:-/bin/sh</span><br><span class="line">::ctrlaltdel:/bin/umount -a -r</span><br><span class="line"><span class="meta">$</span><span class="bash"> chmod 755 etc/inittab</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> <span class="built_in">cd</span> dev</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> sudo mknod console c 5 1</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> sudo mknod null c 1 3</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> sudo mknod tty1 c 4 1</span></span><br></pre></td></tr></table></figure><h2 id="4-制作根文件系统镜像文件"><a class="markdownIt-Anchor" href="#4-制作根文件系统镜像文件"></a> 4. <strong>制作根文件系统镜像文件</strong></h2><p>思路：</p><ol><li>先制作一个空的镜像文件；</li><li>然后把此镜像文件格式化为ext3格式</li><li>接着把此镜像文件挂载，并把根文件系统复制到挂载目录</li><li>卸载该镜像文件。</li><li>打成gzip包。</li></ol><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash">!/bin/bash</span></span><br><span class="line">rm -rf rootfs.ext3</span><br><span class="line">rm -rf fs</span><br><span class="line">dd if=/dev/zero of=./rootfs.ext3 bs=1M count=32</span><br><span class="line">mkfs.ext3 rootfs.ext3</span><br><span class="line">mkdir fs</span><br><span class="line">mount -o loop rootfs.ext3 ./fs</span><br><span class="line">cp -rf ./_install/* ./fs</span><br><span class="line">umount ./fs</span><br><span class="line">gzip --best -c rootfs.ext3 &gt; rootfs.img.gz</span><br></pre></td></tr></table></figure><p>最终生成的文件系统镜像名字为：<code>rootfs.img.gz</code></p><p>准备好了内核和文件系统镜像，接下来就是见证奇迹的时刻！</p><h2 id="5-qemu运行linux内核"><a class="markdownIt-Anchor" href="#5-qemu运行linux内核"></a> 5. qemu运行linux内核</h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> qemu-system-x86_64 \</span></span><br><span class="line">  -kernel ./linux-4.9.229/arch/x86_64/boot/bzImage  \</span><br><span class="line">  -initrd ./busybox-1.30.0/rootfs.img.gz   \</span><br><span class="line">  -append "root=/dev/ram init=/linuxrc"  \</span><br><span class="line">-serial file:output.txt</span><br></pre></td></tr></table></figure><p><a href="https://imgse.com/i/vXCgIg" target="_blank" rel="noopener"><img src="https://s1.ax1x.com/2022/09/11/vXCgIg.png" alt="vXCgIg.png"></a></p><p>这样一个完整的Linux系统就起来啦!</p>]]></content>
     
@@ -302,34 +330,6 @@
       <category term="keyshot" scheme="http://yoursite.com/tags/keyshot/"/>
     
       <category term="机械设计" scheme="http://yoursite.com/tags/%E6%9C%BA%E6%A2%B0%E8%AE%BE%E8%AE%A1/"/>
-    
-  </entry>
-  
-  <entry>
-    <title>2019年，未来的你怎么样了</title>
-    <link href="http://yoursite.com/2019/02/08/%E4%BB%8A%E5%A4%A9%E8%81%8A%E8%81%8A%E6%A2%A6%E6%83%B3/"/>
-    <id>http://yoursite.com/2019/02/08/今天聊聊梦想/</id>
-    <published>2019-02-08T14:11:38.000Z</published>
-    <updated>2019-03-05T07:49:29.616Z</updated>
-    
-    <content type="html"><![CDATA[<blockquote><p>平淡的生活里，最怕不是没有斗志，而是像《无问西东》里说得那样，把自己置身于忙碌当中，有一种麻木的踏实，但丧失了真实……</p></blockquote><p><img src="https://s2.ax1x.com/2019/03/05/kXvYY8.png" alt="kXvYY8.png"></p><p>很久没有通过文字和自己对话了，而时间不知不觉却已来到了2019年。无论内心汹涌澎湃还是波澜不惊，都抵不住日历一页页得翩跹而逝。在时间面前，众生平等，而任何微小的差异经过时间的放大，每个人的人生各自划过不同的轨迹，律动不同的音符。每当独处时，当音乐停止，我对眼前是世界依然是一无所知。</p><p>2018从某种意义上是改变和收获的一年。开始看电子书，开始打字写文章，开始不断学习编程，开始健身，开始重新热爱足球。这些之前我都不曾做过的事情，在2018年变得稀松平常了。我曾固执的认为电子书永远没有纸质书籍让我读起来有感觉，我曾因为机械专业的禁锢对编程拒之门外，我也曾因为喜欢跑步尤其是徜徉在威海的环海路跑步无数次拒绝去健身房撸铁，而改变都在悄然发生着。我通过电子书籍更快的获取营养，借助博客更好的练习表达能力，而健身让我的瘦弱的身体渐渐变得强壮，俄罗斯世界杯让我重燃对足球的热爱。有时我不禁问自己，改变好像也不难，但是你能坚持多久呢？</p><p>成功也不难，高中化学老师说过，不过“专注”二字。何其难，何其难，对于我这个对所有事物保持好奇而只有三分钟热度的人来说，成功还有我的一席之地吗？高考的失败在于没有持续努力，保研的苦果在于固执和缺乏沟通，每当在人生的转折点，我都会突然迷失，而今年我又面临着似乎更重要的抉择——就业。</p><p>乱花渐欲迷人眼，周遭的太多新奇和诱惑，我总是在一些事物中来回切换，而没有一直专注于一件事，这样导致了大量时间在重复曾经熟悉的东西而没有更深入地学习，吉他，编程，cv，dota等等都是如此，我希望自己能专注于一个点深入下去一探究竟，而不是大包大揽得学习很多表层的东西。表层的东西只要付出少量的时间成本就能够获得，深层的东西才是值得去挖掘的，而深层的获得需要日积月累得表层知识的铺垫，让理性逐渐渗透进感性，感觉就来了。能够有C罗的自律可能是一种奢望，但是我希望自己在没有很高天赋的情况下，能够自律得去面对生活，每当生活的很舒服的时候，我却常常惴惴不安，似乎只有辛勤的开垦才能让一天充满幸福，我不知道这是不是穷人的思维。然而麻木的踏实也是自我欺骗，这样并不能收获真实的快乐。</p><p>现在先坚持学习编程，吉他和健身，至于时间会将我带向哪里，在浪潮中去翻涌吧。</p>]]></content>
-    
-    <summary type="html">
-    
-      
-      
-        &lt;blockquote&gt;
-&lt;p&gt;平淡的生活里，最怕不是没有斗志，而是像《无问西东》里说得那样，把自己置身于忙碌当中，有一种麻木的踏实，但丧失了真实……&lt;/p&gt;
-&lt;/blockquote&gt;
-&lt;p&gt;&lt;img src=&quot;https://s2.ax1x.com/2019/03/05/kX
-      
-    
-    </summary>
-    
-      <category term="杂记" scheme="http://yoursite.com/categories/%E6%9D%82%E8%AE%B0/"/>
-    
-    
-      <category term="杂记" scheme="http://yoursite.com/tags/%E6%9D%82%E8%AE%B0/"/>
     
   </entry>
   
