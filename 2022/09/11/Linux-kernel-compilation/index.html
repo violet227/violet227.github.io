@@ -96,20 +96,20 @@
 
 
 
-  <meta name="description" content="如何编译并运行Linux系统？  前言  学习Linux内核是一件振奋人心的事情，而在学习伊始对Linux内核的成功编译并运行也更会燃起更足的动力去钻研。本文从下载并编译Linux内核、编译busybox、制作一个最小的根文件系统，最后用qemu启动你编译好的内核和根文件系统 ，初步感受Linux内核的魅力所在。  首先明确两点：  配置内核就是你来决定编码哪些代码； 编译内核就是生成可执行文件">
+  <meta name="description" content="如何编译并运行Linux系统？前言  学习Linux内核是一件振奋人心的事情，而在学习伊始对Linux内核的成功编译并运行也更会燃起更足的动力去钻研。本文从下载并编译Linux内核、编译busybox、制作一个最小的根文件系统，最后用qemu启动你编译好的内核和根文件系统 ，初步感受Linux内核的魅力所在。   首先明确两点：  配置内核就是你来决定编码哪些代码； 编译内核就是生成可执行文件的一">
 <meta name="keywords" content="Linux内核,编译">
 <meta property="og:type" content="article">
 <meta property="og:title" content="如何编译Linux内核源码？">
 <meta property="og:url" content="http://yoursite.com/2022/09/11/Linux-kernel-compilation/index.html">
 <meta property="og:site_name" content="量子孤岛">
-<meta property="og:description" content="如何编译并运行Linux系统？  前言  学习Linux内核是一件振奋人心的事情，而在学习伊始对Linux内核的成功编译并运行也更会燃起更足的动力去钻研。本文从下载并编译Linux内核、编译busybox、制作一个最小的根文件系统，最后用qemu启动你编译好的内核和根文件系统 ，初步感受Linux内核的魅力所在。  首先明确两点：  配置内核就是你来决定编码哪些代码； 编译内核就是生成可执行文件">
+<meta property="og:description" content="如何编译并运行Linux系统？前言  学习Linux内核是一件振奋人心的事情，而在学习伊始对Linux内核的成功编译并运行也更会燃起更足的动力去钻研。本文从下载并编译Linux内核、编译busybox、制作一个最小的根文件系统，最后用qemu启动你编译好的内核和根文件系统 ，初步感受Linux内核的魅力所在。   首先明确两点：  配置内核就是你来决定编码哪些代码； 编译内核就是生成可执行文件的一">
 <meta property="og:locale" content="zh-CN">
 <meta property="og:image" content="https://s1.ax1x.com/2022/09/11/vXCMG9.png">
 <meta property="og:image" content="https://s1.ax1x.com/2022/09/11/vXCgIg.png">
 <meta property="og:updated_time" content="2022-09-11T14:35:32.789Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="如何编译Linux内核源码？">
-<meta name="twitter:description" content="如何编译并运行Linux系统？  前言  学习Linux内核是一件振奋人心的事情，而在学习伊始对Linux内核的成功编译并运行也更会燃起更足的动力去钻研。本文从下载并编译Linux内核、编译busybox、制作一个最小的根文件系统，最后用qemu启动你编译好的内核和根文件系统 ，初步感受Linux内核的魅力所在。  首先明确两点：  配置内核就是你来决定编码哪些代码； 编译内核就是生成可执行文件">
+<meta name="twitter:description" content="如何编译并运行Linux系统？前言  学习Linux内核是一件振奋人心的事情，而在学习伊始对Linux内核的成功编译并运行也更会燃起更足的动力去钻研。本文从下载并编译Linux内核、编译busybox、制作一个最小的根文件系统，最后用qemu启动你编译好的内核和根文件系统 ，初步感受Linux内核的魅力所在。   首先明确两点：  配置内核就是你来决定编码哪些代码； 编译内核就是生成可执行文件的一">
 <meta name="twitter:image" content="https://s1.ax1x.com/2022/09/11/vXCMG9.png">
 
 
@@ -309,7 +309,7 @@
       
     
 
-    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>归档<span class="badge">15</span></a>
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>归档<span class="badge">16</span></a>
 
   </li>
 
@@ -462,7 +462,7 @@
                 
                   <span class="post-meta-item-text">本文字数：</span>
                 
-                <span title="本文字数">3.6k</span>
+                <span title="本文字数">3.5k</span>
               
 
               
@@ -496,10 +496,8 @@
       
 
       
-        <h1 id="如何编译并运行linux系统"><a class="markdownIt-Anchor" href="#如何编译并运行linux系统"></a> 如何编译并运行Linux系统？</h1>
-<h2 id="前言"><a class="markdownIt-Anchor" href="#前言"></a> <strong>前言</strong></h2>
-<blockquote>
-<p>学习Linux内核是一件振奋人心的事情，而在学习伊始对Linux内核的成功编译并运行也更会燃起更足的动力去钻研。本文从下载并编译Linux内核、编译busybox、制作一个最小的根文件系统，最后用qemu启动你编译好的内核和根文件系统 ，初步感受Linux内核的魅力所在。</p>
+        <h1 id="如何编译并运行Linux系统？"><a href="#如何编译并运行Linux系统？" class="headerlink" title="如何编译并运行Linux系统？"></a>如何编译并运行Linux系统？</h1><h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a><strong>前言</strong></h2><blockquote>
+<p> 学习Linux内核是一件振奋人心的事情，而在学习伊始对Linux内核的成功编译并运行也更会燃起更足的动力去钻研。本文从下载并编译Linux内核、编译busybox、制作一个最小的根文件系统，最后用qemu启动你编译好的内核和根文件系统 ，初步感受Linux内核的魅力所在。 </p>
 </blockquote>
 <p><strong>首先明确两点：</strong></p>
 <ol>
@@ -528,16 +526,12 @@
 <li>制作根文件系统镜像文件</li>
 <li>利用qemu运行linux内核</li>
 </ol>
-<h2 id="1下载并编译linux内核"><a class="markdownIt-Anchor" href="#1下载并编译linux内核"></a> <strong>1.下载并编译Linux内核</strong></h2>
-<p><a href="https://link.zhihu.com/?target=https%3A//mirrors.edge.kernel.org/pub/linux/kernel/v4.x/" target="_blank" rel="noopener"><strong>Index of /pub/linux/kernel/v4.x/mirrors.edge.kernel.org/pub/linux/kernel/v4.x/</strong></a></p>
+<h2 id="1-下载并编译Linux内核"><a href="#1-下载并编译Linux内核" class="headerlink" title="1.下载并编译Linux内核"></a><strong>1.下载并编译Linux内核</strong></h2><p><a href="https://link.zhihu.com/?target=https%3A//mirrors.edge.kernel.org/pub/linux/kernel/v4.x/" target="_blank" rel="noopener"><strong>Index of /pub/linux/kernel/v4.x/mirrors.edge.kernel.org/pub/linux/kernel/v4.x/</strong></a></p>
 <p>下载并解压后，进入目录。</p>
-<h3 id="1指定硬件体系架构"><a class="markdownIt-Anchor" href="#1指定硬件体系架构"></a> <strong>1.指定硬件体系架构</strong></h3>
-<p>为了演示方便，选用了x86架构，如果编译arm则需要再下载对应的toolchain。</p>
+<h3 id="1-指定硬件体系架构"><a href="#1-指定硬件体系架构" class="headerlink" title="1.指定硬件体系架构"></a><strong>1.指定硬件体系架构</strong></h3><p>为了演示方便，选用了x86架构，如果编译arm则需要再下载对应的toolchain。</p>
 <figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ <span class="builtin-name">export</span> <span class="attribute">ARCH</span>=x86</span><br></pre></td></tr></table></figure>
-<h3 id="2配置board-config"><a class="markdownIt-Anchor" href="#2配置board-config"></a> <strong>2.配置board config</strong></h3>
-<figure class="highlight elixir"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable">$ </span>make  x86_64_defconfig</span><br></pre></td></tr></table></figure>
-<h3 id="3配置内核"><a class="markdownIt-Anchor" href="#3配置内核"></a> <strong>3.配置内核</strong></h3>
-<p>这一步其实是对第2步的进行微调，这里我们使用基于ncurse库编制的图形界面工具：</p>
+<h3 id="2-配置board-config"><a href="#2-配置board-config" class="headerlink" title="2.配置board config"></a><strong>2.配置board config</strong></h3><figure class="highlight elixir"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable">$ </span>make  x86_64_defconfig</span><br></pre></td></tr></table></figure>
+<h3 id="3-配置内核"><a href="#3-配置内核" class="headerlink" title="3.配置内核"></a><strong>3.配置内核</strong></h3><p>这一步其实是对第2步的进行微调，这里我们使用基于ncurse库编制的图形界面工具：</p>
 <figure class="highlight elixir"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable">$ </span>make menuconfig</span><br></pre></td></tr></table></figure>
 <p>如果执行该命令时出现：</p>
 <p><a href="https://imgse.com/i/vXCMG9" target="_blank" rel="noopener"><img src="https://s1.ax1x.com/2022/09/11/vXCMG9.png" alt="vXCMG9.png"></a></p>
@@ -545,12 +539,10 @@
 <figure class="highlight q"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo apt-<span class="built_in">get</span> install libncurses5-<span class="built_in">dev</span></span><br></pre></td></tr></table></figure>
 <p>如果需要内核支持ramdisk驱动，需要选中如下配置：</p>
 <figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">General setup  ---&gt;</span><br><span class="line">       ----&gt; [*] Initial RAM filesystem <span class="keyword">and</span> RAM disk (initramfs/initrd) support</span><br><span class="line">    Device Drivers  ---&gt;</span><br><span class="line">       [*] Block devices  ---&gt;</span><br><span class="line">               &lt;*&gt;   RAM block device support</span><br><span class="line">               (65536)<span class="built_in"> Default </span>RAM disk size (kbytes)</span><br></pre></td></tr></table></figure>
-<h3 id="4编译内核"><a class="markdownIt-Anchor" href="#4编译内核"></a> <strong>4.编译内核</strong></h3>
-<figure class="highlight elixir"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable">$ </span>make -j8</span><br></pre></td></tr></table></figure>
+<h3 id="4-编译内核"><a href="#4-编译内核" class="headerlink" title="4.编译内核"></a><strong>4.编译内核</strong></h3><figure class="highlight elixir"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable">$ </span>make -j8</span><br></pre></td></tr></table></figure>
 <p>编译成功后的内核位于：arch/x86_64/boot/bzImage</p>
 <p>至此，内核编译完成。</p>
-<h2 id="2-编译busybox"><a class="markdownIt-Anchor" href="#2-编译busybox"></a> <strong>2. 编译busybox</strong></h2>
-<p>什么是busybox？</p>
+<h2 id="2-编译busybox"><a href="#2-编译busybox" class="headerlink" title="2. 编译busybox"></a><strong>2. 编译busybox</strong></h2><p>什么是busybox？</p>
 <p>busybox号称“嵌入式Linux的瑞士军刀”。BusyBox工具小巧高效，可以替代一大批常用的标准Linux命令行工具，功能有所简化，非常适合资源有限的嵌入式平台。BusyBox是模块化且高度可配置的，可以对其进行裁剪以满足特定需求。</p>
 <p>在如下链接下载busybox：</p>
 <p><a href="https://link.zhihu.com/?target=https%3A//busybox.net/downloads/" target="_blank" rel="noopener"><strong>https://busybox.net/downloads/busybox.net/downloads/</strong></a></p>
@@ -562,11 +554,9 @@
 <p>make是编译busybox，make install是为了在对应目录中编译安装一系列的工具。</p>
 <p>编译完成后的busybox就安装在源码根目录下的_install目录了。</p>
 <p>至此，我们对Linux内核和busybox进行了配置和编译。光编译肯定不过瘾，接下来演示基于busybox制作一个简单的文件系统，并通过qemu模拟器运行Linux，真正的让内核工作起来！</p>
-<h2 id="3-制作一个简版文件系统"><a class="markdownIt-Anchor" href="#3-制作一个简版文件系统"></a> 3. 制作一个简版文件系统</h2>
-<p>编译完成后的busybox就安装在源码根目录下的_install目录了，我们进入_install目录，补充一些必要的文件或目录，相关的shell命令如下：</p>
+<h2 id="3-制作一个简版文件系统"><a href="#3-制作一个简版文件系统" class="headerlink" title="3. 制作一个简版文件系统"></a>3. 制作一个简版文件系统</h2><p>编译完成后的busybox就安装在源码根目录下的_install目录了，我们进入_install目录，补充一些必要的文件或目录，相关的shell命令如下：</p>
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> mkdir -p etc dev mnt proc sys tmp mnt</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> mkdir -p etc/init.d/</span></span><br><span class="line"></span><br><span class="line"><span class="meta">$</span><span class="bash"> mkdir etc dev mnt</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> mkdir -p proc sys tmp mnt</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> mkdir -p etc/init.d/</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> vim etc/fstab</span></span><br><span class="line">proc        /proc           proc         defaults        0        0</span><br><span class="line">tmpfs       /tmp            tmpfs      defaults        0        0</span><br><span class="line">sysfs       /sys            sysfs        defaults        0        0</span><br><span class="line"><span class="meta">$</span><span class="bash"> vim etc/init.d/rcS</span></span><br><span class="line">echo -e "Welcome to tinyLinux"</span><br><span class="line">/bin/mount -a</span><br><span class="line">echo -e "Remounting the root filesystem"</span><br><span class="line">mount  -o  remount,rw  /</span><br><span class="line">mkdir -p /dev/pts</span><br><span class="line">mount -t devpts devpts /dev/pts</span><br><span class="line">echo /sbin/mdev &gt; /proc/sys/kernel/hotplug</span><br><span class="line">mdev -s</span><br><span class="line"><span class="meta">$</span><span class="bash"> chmod 755 etc/init.d/rcS</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> vim etc/inittab</span></span><br><span class="line">::sysinit:/etc/init.d/rcS</span><br><span class="line">::respawn:-/bin/sh</span><br><span class="line">::askfirst:-/bin/sh</span><br><span class="line">::ctrlaltdel:/bin/umount -a -r</span><br><span class="line"><span class="meta">$</span><span class="bash"> chmod 755 etc/inittab</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> <span class="built_in">cd</span> dev</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> sudo mknod console c 5 1</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> sudo mknod null c 1 3</span></span><br><span class="line"><span class="meta">$</span><span class="bash"> sudo mknod tty1 c 4 1</span></span><br></pre></td></tr></table></figure>
-<h2 id="4-制作根文件系统镜像文件"><a class="markdownIt-Anchor" href="#4-制作根文件系统镜像文件"></a> 4. <strong>制作根文件系统镜像文件</strong></h2>
-<p>思路：</p>
+<h2 id="4-制作根文件系统镜像文件"><a href="#4-制作根文件系统镜像文件" class="headerlink" title="4. 制作根文件系统镜像文件"></a>4. <strong>制作根文件系统镜像文件</strong></h2><p>思路：</p>
 <ol>
 <li>先制作一个空的镜像文件；</li>
 <li>然后把此镜像文件格式化为ext3格式</li>
@@ -577,8 +567,7 @@
 <figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash">!/bin/bash</span></span><br><span class="line">rm -rf rootfs.ext3</span><br><span class="line">rm -rf fs</span><br><span class="line">dd if=/dev/zero of=./rootfs.ext3 bs=1M count=32</span><br><span class="line">mkfs.ext3 rootfs.ext3</span><br><span class="line">mkdir fs</span><br><span class="line">mount -o loop rootfs.ext3 ./fs</span><br><span class="line">cp -rf ./_install/* ./fs</span><br><span class="line">umount ./fs</span><br><span class="line">gzip --best -c rootfs.ext3 &gt; rootfs.img.gz</span><br></pre></td></tr></table></figure>
 <p>最终生成的文件系统镜像名字为：<code>rootfs.img.gz</code></p>
 <p>准备好了内核和文件系统镜像，接下来就是见证奇迹的时刻！</p>
-<h2 id="5-qemu运行linux内核"><a class="markdownIt-Anchor" href="#5-qemu运行linux内核"></a> 5. qemu运行linux内核</h2>
-<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> qemu-system-x86_64 \</span></span><br><span class="line">  -kernel ./linux-4.9.229/arch/x86_64/boot/bzImage  \</span><br><span class="line">  -initrd ./busybox-1.30.0/rootfs.img.gz   \</span><br><span class="line">  -append "root=/dev/ram init=/linuxrc"  \</span><br><span class="line">-serial file:output.txt</span><br></pre></td></tr></table></figure>
+<h2 id="5-qemu运行linux内核"><a href="#5-qemu运行linux内核" class="headerlink" title="5. qemu运行linux内核"></a>5. qemu运行linux内核</h2><figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">$</span><span class="bash"> qemu-system-x86_64 \</span></span><br><span class="line">  -kernel ./linux-4.9.229/arch/x86_64/boot/bzImage  \</span><br><span class="line">  -initrd ./busybox-1.30.0/rootfs.img.gz   \</span><br><span class="line">  -append "root=/dev/ram init=/linuxrc"  \</span><br><span class="line">-serial file:output.txt</span><br></pre></td></tr></table></figure>
 <p><a href="https://imgse.com/i/vXCgIg" target="_blank" rel="noopener"><img src="https://s1.ax1x.com/2022/09/11/vXCgIg.png" alt="vXCgIg.png"></a></p>
 <p>这样一个完整的Linux系统就起来啦!</p>
 
@@ -748,7 +737,7 @@
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">15</span>
+                    <span class="site-state-item-count">16</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>
@@ -947,7 +936,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#如何编译并运行linux系统"><span class="nav-number">1.</span> <span class="nav-text"> 如何编译并运行Linux系统？</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#前言"><span class="nav-number">1.1.</span> <span class="nav-text"> 前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1下载并编译linux内核"><span class="nav-number">1.2.</span> <span class="nav-text"> 1.下载并编译Linux内核</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1指定硬件体系架构"><span class="nav-number">1.2.1.</span> <span class="nav-text"> 1.指定硬件体系架构</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2配置board-config"><span class="nav-number">1.2.2.</span> <span class="nav-text"> 2.配置board config</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3配置内核"><span class="nav-number">1.2.3.</span> <span class="nav-text"> 3.配置内核</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4编译内核"><span class="nav-number">1.2.4.</span> <span class="nav-text"> 4.编译内核</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-编译busybox"><span class="nav-number">1.3.</span> <span class="nav-text"> 2. 编译busybox</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-制作一个简版文件系统"><span class="nav-number">1.4.</span> <span class="nav-text"> 3. 制作一个简版文件系统</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-制作根文件系统镜像文件"><span class="nav-number">1.5.</span> <span class="nav-text"> 4. 制作根文件系统镜像文件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-qemu运行linux内核"><span class="nav-number">1.6.</span> <span class="nav-text"> 5. qemu运行linux内核</span></a></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#如何编译并运行Linux系统？"><span class="nav-number">1.</span> <span class="nav-text">如何编译并运行Linux系统？</span></a><ol class="nav-child"><li class="nav-item nav-level-2"><a class="nav-link" href="#前言"><span class="nav-number">1.1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#1-下载并编译Linux内核"><span class="nav-number">1.2.</span> <span class="nav-text">1.下载并编译Linux内核</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-指定硬件体系架构"><span class="nav-number">1.2.1.</span> <span class="nav-text">1.指定硬件体系架构</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-配置board-config"><span class="nav-number">1.2.2.</span> <span class="nav-text">2.配置board config</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-配置内核"><span class="nav-number">1.2.3.</span> <span class="nav-text">3.配置内核</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#4-编译内核"><span class="nav-number">1.2.4.</span> <span class="nav-text">4.编译内核</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#2-编译busybox"><span class="nav-number">1.3.</span> <span class="nav-text">2. 编译busybox</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#3-制作一个简版文件系统"><span class="nav-number">1.4.</span> <span class="nav-text">3. 制作一个简版文件系统</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#4-制作根文件系统镜像文件"><span class="nav-number">1.5.</span> <span class="nav-text">4. 制作根文件系统镜像文件</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#5-qemu运行linux内核"><span class="nav-number">1.6.</span> <span class="nav-text">5. qemu运行linux内核</span></a></li></ol></li></ol></div>
             
 
           </div>
@@ -989,7 +978,7 @@
     
       <span class="post-meta-item-text">站点总字数：</span>
     
-    <span title="站点总字数">82k</span>
+    <span title="站点总字数">89k</span>
   
 <div class="powered-by">
 <i class="fa fa-user-md"></i><span id="busuanzi_container_site_uv">
@@ -1004,7 +993,7 @@
     
       <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
     
-    <span title="站点阅读时长">2:16</span>
+    <span title="站点阅读时长">2:28</span>
   
 </div>
 

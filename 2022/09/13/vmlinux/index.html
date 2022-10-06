@@ -96,29 +96,20 @@
 
 
 
-  <meta name="description" content="工作马马虎虎，只想在兴趣和游戏中寻觅快活，充其量只能获得一时的快感，绝不能尝到从心底涌出的惊喜和快乐，但来自工作的喜悦并不像糖果那样——放进嘴里就甜味十足，而是需要从苦劳与艰辛中渗出，因此当我们聚精会神，孜孜不倦，克服艰辛后的成就感，世上没有哪种喜悦可以类比. ​                                                                ——稻">
-<meta name="keywords" content="SolidWorks,keyshot,机械设计">
+  <meta name="description" content="前言如何编译Linux内核源码？| 量子孤岛一文中提到了，vmlinux是原始的，未经压缩的内核可执行文件，即kernel编出来的原始产物。 本文的主题只有一个：vmlinux到底是怎么生成的？     日期 内核版本 架构     2022-9-14 Linux5.4.200 ARM64     按图索骥-内核子系统编译kernel中编译的起点是根目录下的Makefile。 https://el">
+<meta name="keywords" content="Linux内核,编译">
 <meta property="og:type" content="article">
-<meta property="og:title" content="小型鱼丸生产加工流水线设计">
-<meta property="og:url" content="http://yoursite.com/2019/03/10/鱼丸机/index.html">
+<meta property="og:title" content="vmlinux是如何被编译出来的？">
+<meta property="og:url" content="http://yoursite.com/2022/09/13/vmlinux/index.html">
 <meta property="og:site_name" content="量子孤岛">
-<meta property="og:description" content="工作马马虎虎，只想在兴趣和游戏中寻觅快活，充其量只能获得一时的快感，绝不能尝到从心底涌出的惊喜和快乐，但来自工作的喜悦并不像糖果那样——放进嘴里就甜味十足，而是需要从苦劳与艰辛中渗出，因此当我们聚精会神，孜孜不倦，克服艰辛后的成就感，世上没有哪种喜悦可以类比. ​                                                                ——稻">
+<meta property="og:description" content="前言如何编译Linux内核源码？| 量子孤岛一文中提到了，vmlinux是原始的，未经压缩的内核可执行文件，即kernel编出来的原始产物。 本文的主题只有一个：vmlinux到底是怎么生成的？     日期 内核版本 架构     2022-9-14 Linux5.4.200 ARM64     按图索骥-内核子系统编译kernel中编译的起点是根目录下的Makefile。 https://el">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:image" content="https://s2.ax1x.com/2019/03/09/ASHY7t.jpg">
-<meta property="og:image" content="https://s2.ax1x.com/2019/03/10/A9pHGd.png">
-<meta property="og:image" content="https://s2.ax1x.com/2019/03/10/A9EaH1.png">
-<meta property="og:image" content="https://s2.ax1x.com/2019/03/10/A9EuBn.png">
-<meta property="og:image" content="https://s2.ax1x.com/2019/03/09/ASHJ0I.jpg">
-<meta property="og:image" content="https://s2.ax1x.com/2019/03/10/A9pWKx.png">
-<meta property="og:image" content="https://s2.ax1x.com/2019/03/09/ASHUtf.jpg">
-<meta property="og:image" content="https://s2.ax1x.com/2019/03/10/A9p2x1.png">
-<meta property="og:image" content="https://s2.ax1x.com/2019/03/09/ASHNAP.jpg">
-<meta property="og:image" content="https://s2.ax1x.com/2019/03/10/A9poIe.png">
-<meta property="og:updated_time" content="2019-07-23T13:07:40.176Z">
+<meta property="og:image" content="https://s1.ax1x.com/2022/10/06/x3SX59.png">
+<meta property="og:updated_time" content="2022-10-06T14:37:27.580Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="小型鱼丸生产加工流水线设计">
-<meta name="twitter:description" content="工作马马虎虎，只想在兴趣和游戏中寻觅快活，充其量只能获得一时的快感，绝不能尝到从心底涌出的惊喜和快乐，但来自工作的喜悦并不像糖果那样——放进嘴里就甜味十足，而是需要从苦劳与艰辛中渗出，因此当我们聚精会神，孜孜不倦，克服艰辛后的成就感，世上没有哪种喜悦可以类比. ​                                                                ——稻">
-<meta name="twitter:image" content="https://s2.ax1x.com/2019/03/09/ASHY7t.jpg">
+<meta name="twitter:title" content="vmlinux是如何被编译出来的？">
+<meta name="twitter:description" content="前言如何编译Linux内核源码？| 量子孤岛一文中提到了，vmlinux是原始的，未经压缩的内核可执行文件，即kernel编出来的原始产物。 本文的主题只有一个：vmlinux到底是怎么生成的？     日期 内核版本 架构     2022-9-14 Linux5.4.200 ARM64     按图索骥-内核子系统编译kernel中编译的起点是根目录下的Makefile。 https://el">
+<meta name="twitter:image" content="https://s1.ax1x.com/2022/10/06/x3SX59.png">
 
 
 
@@ -127,7 +118,7 @@
 
 
 
-  <link rel="canonical" href="http://yoursite.com/2019/03/10/鱼丸机/">
+  <link rel="canonical" href="http://yoursite.com/2022/09/13/vmlinux/">
 
 
 
@@ -137,7 +128,7 @@
   };
 </script>
 
-  <title>小型鱼丸生产加工流水线设计 | 量子孤岛</title>
+  <title>vmlinux是如何被编译出来的？ | 量子孤岛</title>
   
 
 
@@ -369,7 +360,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/03/10/鱼丸机/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2022/09/13/vmlinux/">
 
     <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
       <meta itemprop="name" content="孤岛violet">
@@ -386,7 +377,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">小型鱼丸生产加工流水线设计
+          <h1 class="post-title" itemprop="name headline">vmlinux是如何被编译出来的？
 
               
             
@@ -412,7 +403,7 @@
                 
               
 
-              <time title="创建时间：2019-03-10 14:29:44" itemprop="dateCreated datePublished" datetime="2019-03-10T14:29:44+08:00">2019-03-10</time>
+              <time title="创建时间：2022-09-13 22:33:37" itemprop="dateCreated datePublished" datetime="2022-09-13T22:33:37+08:00">2022-09-13</time>
             
 
             
@@ -429,7 +420,7 @@
                 
                   <span class="post-meta-item-text">更新于</span>
                 
-                <time title="修改时间：2019-07-23 21:07:40" itemprop="dateModified" datetime="2019-07-23T21:07:40+08:00">2019-07-23</time>
+                <time title="修改时间：2022-10-06 22:37:27" itemprop="dateModified" datetime="2022-10-06T22:37:27+08:00">2022-10-06</time>
               
             
           </span>
@@ -446,7 +437,7 @@
                 <span class="post-meta-item-text">分类于</span>
               
               
-                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing"><a href="/categories/Projects/" itemprop="url" rel="index"><span itemprop="name">Projects</span></a></span>
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing"><a href="/categories/Linux内核/" itemprop="url" rel="index"><span itemprop="name">Linux内核</span></a></span>
 
                 
                 
@@ -482,7 +473,7 @@
                 
                   <span class="post-meta-item-text">本文字数：</span>
                 
-                <span title="本文字数">1k</span>
+                <span title="本文字数">4.9k</span>
               
 
               
@@ -496,7 +487,7 @@
                 
                   <span class="post-meta-item-text">阅读时长 &asymp;</span>
                 
-                <span title="阅读时长">2 分钟</span>
+                <span title="阅读时长">8 分钟</span>
               
             </div>
           
@@ -516,26 +507,85 @@
       
 
       
-        <blockquote>
-<p>工作马马虎虎，只想在兴趣和游戏中寻觅快活，充其量只能获得一时的快感，绝不能尝到从心底涌出的惊喜和快乐，但来自工作的喜悦并不像糖果那样——放进嘴里就甜味十足，而是需要从苦劳与艰辛中渗出，因此当我们聚精会神，孜孜不倦，克服艰辛后的成就感，世上没有哪种喜悦可以类比.</p>
-<p>​                                                                ——稻盛和夫《活法》</p>
-</blockquote>
-<h2 id="视频链接"><a href="#视频链接" class="headerlink" title="视频链接"></a><a href="https://www.bilibili.com/video/av55167221" target="_blank" rel="noopener">视频链接</a></h2><p>大二的时候，出于对工业设计和机械结构的兴趣，自学了SolidWorks，拉上几个朋友一起做了这个项目。来到威海，我们饱含着对大海的一种情怀和向往，致使我们想到了海产品的加工。鱼丸加工整个流水线很是庞大，剖割、清洗、杀菌、擂溃、调料、成型、蒸煮、冷冻到包装。我们着重从拥有较多机械结构的<strong>剖割</strong>、<strong>鱼丸成型</strong>和<strong>包装</strong>三部分建模——自动杀鱼系统、鱼丸成型系统和包装机系统。此套系统运用于鱼的前期处理包括去鳞，去内脏，去头尾，清洗等，以及鱼丸的成型和包装一体化的生产。</p>
-<p>主要是用<strong>SolidWorks</strong>进行设计，<strong>keyshot</strong>进行渲染，<strong>Solid-Composer</strong>结合<strong>AE</strong>进行视频制作。整个项目的工程量相当大，从目标敲定到最后的完工花了将近四个月的时间。由于之间机器人比赛的经验，作为队长我很好的进行了分工和计划推进，最终的结果还是挺让人激动的。</p>
-<h3 id="总设计图"><a href="#总设计图" class="headerlink" title="总设计图"></a>总设计图</h3><p><img src="https://s2.ax1x.com/2019/03/09/ASHY7t.jpg" alt="ASHY7t.jpg"></p>
-<p><img src="https://s2.ax1x.com/2019/03/10/A9pHGd.png" alt="A9pHGd.png"></p>
-<p><img src="https://s2.ax1x.com/2019/03/10/A9EaH1.png" alt="A9EaH1.png"></p>
-<p><img src="https://s2.ax1x.com/2019/03/10/A9EuBn.png" alt="A9EuBn.png"></p>
-<h3 id="杀鱼机部分"><a href="#杀鱼机部分" class="headerlink" title="杀鱼机部分"></a>杀鱼机部分</h3><p><img src="https://s2.ax1x.com/2019/03/09/ASHJ0I.jpg" alt="ASHJ0I.jpg"></p>
-<p><img src="https://s2.ax1x.com/2019/03/10/A9pWKx.png" alt="A9pWKx.png"></p>
-<p>机器主要传动方式为齿轮传动和皮带传动，将鱼平放在传送带上，前后的夹持装置把鱼尾和鱼头夹住；水平方向的刀片将鱼腹剖开，带有软毛刷的小滚筒将内脏清除，同时毛刷中的空心管冲水清洗鱼腹，内脏落至下方垃圾箱内；之后竖直方向的刀片将鱼头鱼尾切掉，鱼腹由出口处传送带运出，鱼头鱼尾回到垃圾箱上方，夹持装置上的顶杆使其落至垃圾箱中。</p>
-<h3 id="鱼丸成型机部分"><a href="#鱼丸成型机部分" class="headerlink" title="鱼丸成型机部分"></a>鱼丸成型机部分</h3><p><img src="https://s2.ax1x.com/2019/03/09/ASHUtf.jpg" alt="ASHUtf.jpg"></p>
-<p><img src="https://s2.ax1x.com/2019/03/10/A9p2x1.png" alt="A9p2x1.png"></p>
-<p>鱼丸的成型方面运用了行星齿轮机构并综合了能量守恒及流体力学等方面要求设计了变速管以实现鱼丸成型，防止阻塞现象的发生。</p>
-<h3 id="包装机部分"><a href="#包装机部分" class="headerlink" title="包装机部分"></a>包装机部分</h3><p><img src="https://s2.ax1x.com/2019/03/09/ASHNAP.jpg" alt="ASHNAP.jpg"></p>
-<p><img src="https://s2.ax1x.com/2019/03/10/A9poIe.png" alt="A9poIe.png"></p>
-<p>包装机则通过两侧传送装置同时送纸袋，创新地运用到三边封口装置，其中用四个锥齿轮和连杆组成传动机构同时封左右和下口，上口鱼丸掉落后，通过两个机械臂的配合使包装袋转过90度后，另一个连杆机构再封装上口，而后掉落至传送带完成包装。</p>
-<p>这些东西相当于对之前有个交代吧，知识都是相通的，要不断得在成功的地方吸取养分，然后迁移到其他地方。正如前文的摘录，孜孜以求才能活得更大的幸福，加油！</p>
+        <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p><a href="https://wangtao27.top/2022/09/11/Linux-kernel-compilation/#more" target="_blank" rel="noopener">如何编译Linux内核源码？| 量子孤岛</a>一文中提到了，vmlinux是原始的，未经压缩的内核可执行文件，即kernel编出来的原始产物。</p>
+<p>本文的主题只有一个：vmlinux到底是怎么生成的？</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:left">日期</th>
+<th style="text-align:left">内核版本</th>
+<th style="text-align:left">架构</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">2022-9-14</td>
+<td style="text-align:left">Linux5.4.200</td>
+<td style="text-align:left">ARM64</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h2 id="按图索骥-内核子系统编译"><a href="#按图索骥-内核子系统编译" class="headerlink" title="按图索骥-内核子系统编译"></a>按图索骥-内核子系统编译</h2><p>kernel中编译的起点是根目录下的Makefile。</p>
+<p><a href="https://elixir.bootlin.com/linux/v5.4.200/source/Makefile#L1099" target="_blank" rel="noopener">https://elixir.bootlin.com/linux/v5.4.200/source/Makefile#L1099</a></p>
+<figure class="highlight makefile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Final link of vmlinux with optional arch pass after final link</span></span><br><span class="line">cmd_link-vmlinux =                                                 \</span><br><span class="line">	<span class="variable">$(CONFIG_SHELL)</span> <span class="variable">$&lt;</span> <span class="variable">$(LD)</span> <span class="variable">$(KBUILD_LDFLAGS)</span> <span class="variable">$(LDFLAGS_vmlinux)</span> ;    \</span><br><span class="line">	<span class="variable">$(<span class="built_in">if</span> <span class="variable">$(ARCH_POSTLINK)</span>, <span class="variable">$(MAKE)</span> -f <span class="variable">$(ARCH_POSTLINK)</span> <span class="variable">$@</span>, true)</span></span><br><span class="line"></span><br><span class="line"><span class="section">vmlinux: scripts/link-vmlinux.sh autoksyms_recursive $(vmlinux-deps) FORCE</span></span><br><span class="line">	+<span class="variable">$(<span class="built_in">call</span> if_changed,link-vmlinux)</span></span><br><span class="line"></span><br><span class="line">targets := vmlinux</span><br></pre></td></tr></table></figure>
+<p>由脚本可以看出，产物vmlinux的<code>scripts/link-vmlinux.sh</code>有两个依赖：</p>
+<p><code>autoksyms_recursive</code>：初步看可是ko有关的语法，暂时跳过。</p>
+<figure class="highlight makefile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">ifdef</span> CONFIG_TRIM_UNUSED_KSYMS</span><br><span class="line"><span class="section">autoksyms_recursive: descend modules.order</span></span><br><span class="line">	<span class="variable">$(Q)</span><span class="variable">$(CONFIG_SHELL)</span> <span class="variable">$(srctree)</span>/scripts/adjust_autoksyms.sh \</span><br><span class="line">	  <span class="string">"<span class="variable">$(MAKE)</span> -f <span class="variable">$(srctree)</span>/Makefile vmlinux"</span></span><br><span class="line"><span class="keyword">endif</span></span><br></pre></td></tr></table></figure>
+<p><code>vmlinux-deps</code>重点看。</p>
+<figure class="highlight makefile"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">vmlinux-deps := <span class="variable">$(KBUILD_LDS)</span> <span class="variable">$(KBUILD_VMLINUX_OBJS)</span> <span class="variable">$(KBUILD_VMLINUX_LIBS)</span></span><br></pre></td></tr></table></figure>
+<p>依次展开看。</p>
+<p><code>KBUILD_LDS</code></p>
+<figure class="highlight makefile"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">export</span> KBUILD_LDS          := arch/<span class="variable">$(SRCARCH)</span>/kernel/vmlinux.lds</span><br></pre></td></tr></table></figure>
+<p><code>vmlinux.lds</code>是非常重要的链接文件，打算后面另起一文详细讲，这里暂不展开。</p>
+<p><code>KBUILD_VMLINUX_OBJS</code></p>
+<figure class="highlight makefile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Externally visible symbols (used by link-vmlinux.sh)</span></span><br><span class="line"><span class="keyword">export</span> KBUILD_VMLINUX_OBJS := $(head-y) $(init-y) $(core-y) $(libs-y2) \</span><br><span class="line">			      $(drivers-y) $(net-y) $(virt-y)</span><br></pre></td></tr></table></figure>
+<p>这里岛主对比了2.6版本的Makefile写法，5.4版本删掉了原来的KBUILD_VMLINUX_INIT：</p>
+<figure class="highlight makefile"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">export</span> KBUILD_VMLINUX_INIT := $(head-y) $(init-y)</span><br></pre></td></tr></table></figure>
+<p>而直接把<code>$(head-y)</code> <code>$(init-y)</code>追加到了<code>KBUILD_VMLINUX_OBJS</code>后面。</p>
+<p>为了一探究竟，我们再依次展开<code>KBUILD_VMLINUX_OBJS</code>的各个组成部分.</p>
+<p><code>head-y</code>：与架构相关，arm64架构定义在arch/arm64/Makefile</p>
+<p><a href="https://elixir.bootlin.com/linux/v5.4.200/source/arch/arm64/Makefile#L107" target="_blank" rel="noopener">https://elixir.bootlin.com/linux/v5.4.200/source/arch/arm64/Makefile#L107</a></p>
+<figure class="highlight makefile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Default value</span></span><br><span class="line">head-y		:= arch/arm64/kernel/head.o</span><br></pre></td></tr></table></figure>
+<p><code>init-y</code></p>
+<p><a href="https://elixir.bootlin.com/linux/v5.4.200/source/Makefile#L637" target="_blank" rel="noopener">https://elixir.bootlin.com/linux/v5.4.200/source/Makefile#L637</a></p>
+<figure class="highlight makefile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">ifeq</span> (<span class="variable">$(KBUILD_EXTMOD)</span>,)</span><br><span class="line"><span class="comment"># Objects we will link into vmlinux / subdirs we need to visit</span></span><br><span class="line">init-y		:= init/</span><br><span class="line">init-y		:= <span class="variable">$(<span class="built_in">patsubst</span> %/, %/built-in.a, $(init-y)</span>)</span><br></pre></td></tr></table></figure>
+<p>按照语句执行顺序，这里<code>init-y</code>展开后为<code>init/built-in.o</code></p>
+<p>继续展开剩余的：</p>
+<p><code>core-y</code></p>
+<figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">core-y		:= usr/</span><br><span class="line">core-y		+= kernel<span class="regexp">/ certs/</span> mm<span class="regexp">/ fs/</span> ipc<span class="regexp">/ security/</span> crypto<span class="regexp">/ block/</span></span><br><span class="line">core-y		:= $(patsubst %<span class="regexp">/, %/</span>built-<span class="keyword">in</span>.a, $(core-y))</span><br></pre></td></tr></table></figure>
+<p><code>libs-y2</code></p>
+<figure class="highlight crystal"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">libs-y		:= <span class="class"><span class="keyword">lib</span>/</span></span><br><span class="line">libs-y1		:= $(patsubst <span class="string">%/, %/</span><span class="class"><span class="keyword">lib</span>.<span class="title">a</span>, $(<span class="title">libs</span>-<span class="title">y</span>))</span></span><br><span class="line">libs-y2		:= $(patsubst <span class="string">%/, %/</span>built-in.a, $(filter-<span class="keyword">out</span> %.a, $(libs-y)))</span><br></pre></td></tr></table></figure>
+<p><code>drivers-y</code></p>
+<figure class="highlight mel"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">drivers-y	:= drivers/ <span class="keyword">sound</span>/</span><br><span class="line">drivers-y	:= $(patsubst %/, %/built-<span class="keyword">in</span>.a, $(drivers-y))</span><br></pre></td></tr></table></figure>
+<p><code>net-y</code></p>
+<figure class="highlight dos"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">net</span>-y		:= <span class="built_in">net</span>/</span><br><span class="line"><span class="built_in">net</span>-y		:= $(patsubst %/, %/built-<span class="keyword">in</span>.a, $(<span class="built_in">net</span>-y))</span><br></pre></td></tr></table></figure>
+<p><code>virt-y</code></p>
+<figure class="highlight mel"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">virt-y      := virt/</span><br><span class="line">virt-y      := $(patsubst %/, %/built-<span class="keyword">in</span>.o, $(virt-y))</span><br></pre></td></tr></table></figure>
+<p>通过观察不难发现：几乎所有的依赖条件中，都会生成一个built-in.o文件.</p>
+<p><code>KBUILD_VMLINUX_LIBS</code></p>
+<figure class="highlight makefile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">export</span> KBUILD_VMLINUX_LIBS := $(libs-y1)</span><br><span class="line">=&gt;</span><br><span class="line">libs-y1		:= <span class="variable">$(<span class="built_in">patsubst</span> %/, %/lib.a, $(libs-y)</span>)</span><br><span class="line">=&gt;</span><br><span class="line">libs-y		:= lib/</span><br></pre></td></tr></table></figure>
+<p>依次展开后也不难发现，调用了Linux中的各个子系统的根目录，想必vmlinux也是这些根目标链接而成的。</p>
+<p>备注：</p>
+<p>简单回忆一下patsubst.查找<code>&lt;text&gt;</code>中的单词（单词以“空格”、“Tab”或“回车”“换行”分隔）是否符合模式<code>&lt;pattern&gt;</code>，如果匹配的话，则以<code>&lt;replacement&gt;</code>替换</p>
+<figure class="highlight makefile"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable">$(<span class="built_in">patsubst</span> &lt;pattern&gt;,&lt;replacement&gt;,&lt;text&gt; )</span></span><br></pre></td></tr></table></figure>
+<p>我们再回到根目录下的Makefile中，target:vmlinux后面还有一些重要信息需要澄清：</p>
+<figure class="highlight makefile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">targets := vmlinux</span><br><span class="line"></span><br><span class="line"><span class="comment"># The actual objects are generated when descending,</span></span><br><span class="line"><span class="comment"># make sure no implicit rule kicks in</span></span><br><span class="line"><span class="variable">$(<span class="built_in">sort</span> $(vmlinux-deps)</span>): descend ;</span><br><span class="line"></span><br><span class="line">...</span><br><span class="line"><span class="section">descend: $(build-dirs)</span></span><br><span class="line">...</span><br><span class="line">build-dirs	:= $(vmlinux-dirs)</span><br><span class="line"></span><br><span class="line">vmlinux-dirs	:= <span class="variable">$(<span class="built_in">patsubst</span> %/,%,$(<span class="built_in">filter</span> %/, $(init-y)</span> $(init-m) \</span><br><span class="line">		     $(core-y) $(core-m) $(drivers-y) $(drivers-m) \</span><br><span class="line">		     $(net-y) $(net-m) $(libs-y) $(libs-m) $(virt-y)))</span><br><span class="line">		     </span><br><span class="line"><span class="comment"># Handle descending into subdirectories listed in $(build-dirs)</span></span><br><span class="line"><span class="comment"># Preset locale variables to speed up the build process. Limit locale</span></span><br><span class="line"><span class="comment"># tweaks to this spot to avoid wrong language settings when running</span></span><br><span class="line"><span class="comment"># make menuconfig etc.</span></span><br><span class="line"><span class="comment"># Error messages still appears in the original language</span></span><br><span class="line">PHONY += descend $(build-dirs)</span><br><span class="line"><span class="section">descend: $(build-dirs)</span></span><br><span class="line"><span class="section">$(build-dirs): prepare</span></span><br><span class="line">	<span class="variable">$(Q)</span><span class="variable">$(MAKE)</span> <span class="variable">$(build)</span>=<span class="variable">$@</span> \</span><br><span class="line">	single-build=<span class="variable">$(<span class="built_in">if</span> $(<span class="built_in">filter</span>-out <span class="variable">$@</span>/, $(single-no-ko)</span>),1) \</span><br><span class="line">	need-builtin=1 need-modorder=1</span><br></pre></td></tr></table></figure>
+<p>我们来慢慢分析。在<code>vmlinux-deps</code>中的变量，都依赖于<code>vmlinux-dirs</code>变量的值。而<code>vmlinux-dirs</code>展开是众多的子目录，其目标规则最终定定位到<code>$(Q)$(MAKE) $(build)=$@</code>。按照之前我们的已经掌握的先验知识，在<code>scripts/Kbuild.include</code>展开后即</p>
+<figure class="highlight makefile"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">make -f scripts/Makefile.build obj=<span class="variable">$@</span></span><br></pre></td></tr></table></figure>
+<p>即依次回到各个子目录执行编译。</p>
+<h2 id="粘合剂"><a href="#粘合剂" class="headerlink" title="粘合剂"></a>粘合剂</h2><p>上面详细展开了内核子系统的编译流程。当各个子模块都编译完成，这时就需要工具将它们全部粘合起来制作成<code>vmlinux</code>。</p>
+<p>开篇的第一行代码还没聊，这回该它登场了!</p>
+<figure class="highlight makefile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Final link of vmlinux with optional arch pass after final link</span></span><br><span class="line">cmd_link-vmlinux =                                                 \</span><br><span class="line">	<span class="variable">$(CONFIG_SHELL)</span> <span class="variable">$&lt;</span> <span class="variable">$(LD)</span> <span class="variable">$(KBUILD_LDFLAGS)</span> <span class="variable">$(LDFLAGS_vmlinux)</span> ;    \</span><br><span class="line">	<span class="variable">$(<span class="built_in">if</span> <span class="variable">$(ARCH_POSTLINK)</span>, <span class="variable">$(MAKE)</span> -f <span class="variable">$(ARCH_POSTLINK)</span> <span class="variable">$@</span>, true)</span></span><br></pre></td></tr></table></figure>
+<p>$&lt;表示依赖关系中的第一个依赖，即<code>scripts/link-vmlinux.sh</code>，这个脚本完成后续的链接工作。</p>
+<p>来吧，看看<code>scripts/link-vmlinux.sh</code>！</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="selector-id">#link</span> vmlinux.o</span><br><span class="line">info LD vmlinux.o</span><br><span class="line">modpost_link vmlinux.o</span><br><span class="line">...</span><br><span class="line">vmlinux_link vmlinux <span class="string">"$&#123;kallsymso&#125;"</span> $&#123;btf_vmlinux_bin_o&#125;</span><br></pre></td></tr></table></figure>
+<p><code>vmlinux_link</code>是一个link函数，其中：</p>
+<figure class="highlight makefile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">$&#123;LD&#125; $&#123;KBUILD_LDFLAGS&#125; $&#123;LDFLAGS_vmlinux&#125;	\</span><br><span class="line">	$&#123;strip_debug<span class="comment">#-Wl,&#125;			\</span></span><br><span class="line">	-o $&#123;output&#125;				\</span><br><span class="line">	-T $&#123;lds&#125; $&#123;objects&#125;</span><br></pre></td></tr></table></figure>
+<p>这里<code>ld</code>的objects就是前面分析的<code>vmlinux-deps</code>.</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>用一张图来汇总上面的分析。</p>
+<p><a href="https://imgse.com/i/x3SX59" target="_blank" rel="noopener"><img src="https://s1.ax1x.com/2022/10/06/x3SX59.png" alt="x3SX59.png"></a></p>
 
       
     </div>
@@ -564,12 +614,12 @@
   <!-- JS库 sweetalert 可修改路径 -->
   <script src="https://cdn.bootcss.com/jquery/2.0.0/jquery.min.js"></script>
   <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
-  <p><span>本文标题:</span><a href="/2019/03/10/鱼丸机/">小型鱼丸生产加工流水线设计</a></p>
+  <p><span>本文标题:</span><a href="/2022/09/13/vmlinux/">vmlinux是如何被编译出来的？</a></p>
   <p><span>文章作者:</span><a href="/" title="访问 孤岛violet 的个人博客">孤岛violet</a></p>
-  <p><span>发布时间:</span>2019年03月10日 - 14:29</p>
-  <p><span>最后更新:</span>2019年07月23日 - 21:07</p>
-  <p><span>原始链接:</span><a href="/2019/03/10/鱼丸机/" title="小型鱼丸生产加工流水线设计">http://yoursite.com/2019/03/10/鱼丸机/</a>
-    <span class="copy-path" title="点击复制文章链接"><i class="fa fa-clipboard" data-clipboard-text="http://yoursite.com/2019/03/10/鱼丸机/" aria-label="复制成功！"></i></span>
+  <p><span>发布时间:</span>2022年09月13日 - 22:33</p>
+  <p><span>最后更新:</span>2022年10月06日 - 22:37</p>
+  <p><span>原始链接:</span><a href="/2022/09/13/vmlinux/" title="vmlinux是如何被编译出来的？">http://yoursite.com/2022/09/13/vmlinux/</a>
+    <span class="copy-path" title="点击复制文章链接"><i class="fa fa-clipboard" data-clipboard-text="http://yoursite.com/2022/09/13/vmlinux/" aria-label="复制成功！"></i></span>
   </p>
   <p><span>许可协议:</span><i class="fa fa-creative-commons"></i> <a rel="license" href="https://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank" title="Attribution-NonCommercial-NoDerivatives 4.0 International (CC BY-NC-ND 4.0)">署名-非商业性使用-禁止演绎 4.0 国际</a> 转载请保留原文链接及作者。</p>  
 </div>
@@ -604,11 +654,9 @@
       
         <div class="post-tags">
           
-            <a href="/tags/SolidWorks/" rel="tag"><i class="fa fa-tag"></i> SolidWorks</a>
+            <a href="/tags/Linux内核/" rel="tag"><i class="fa fa-tag"></i> Linux内核</a>
           
-            <a href="/tags/keyshot/" rel="tag"><i class="fa fa-tag"></i> keyshot</a>
-          
-            <a href="/tags/机械设计/" rel="tag"><i class="fa fa-tag"></i> 机械设计</a>
+            <a href="/tags/编译/" rel="tag"><i class="fa fa-tag"></i> 编译</a>
           
         </div>
       
@@ -621,8 +669,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2019/02/02/操作像素的14中方法/" rel="next" title="操作像素的14中方法">
-                <i class="fa fa-chevron-left"></i> 操作像素的14中方法
+              <a href="/2022/09/12/compile-obj-file/" rel="next" title="Linux kernel中.o文件的编译过程">
+                <i class="fa fa-chevron-left"></i> Linux kernel中.o文件的编译过程
               </a>
             
           </div>
@@ -630,10 +678,6 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
-            
-              <a href="/2019/03/10/爬楼小车/" rel="prev" title="智能寻迹爬楼载重清洁装置">
-                智能寻迹爬楼载重清洁装置 <i class="fa fa-chevron-right"></i>
-              </a>
             
           </div>
         </div>
@@ -904,7 +948,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#视频链接"><span class="nav-number">1.</span> <span class="nav-text">视频链接</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#总设计图"><span class="nav-number">1.1.</span> <span class="nav-text">总设计图</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#杀鱼机部分"><span class="nav-number">1.2.</span> <span class="nav-text">杀鱼机部分</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#鱼丸成型机部分"><span class="nav-number">1.3.</span> <span class="nav-text">鱼丸成型机部分</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#包装机部分"><span class="nav-number">1.4.</span> <span class="nav-text">包装机部分</span></a></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#按图索骥-内核子系统编译"><span class="nav-number">2.</span> <span class="nav-text">按图索骥-内核子系统编译</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#粘合剂"><span class="nav-number">3.</span> <span class="nav-text">粘合剂</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#总结"><span class="nav-number">4.</span> <span class="nav-text">总结</span></a></li></ol></div>
             
 
           </div>

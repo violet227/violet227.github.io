@@ -96,19 +96,19 @@
 
 
 
-  <meta name="description" content="1. 前言 在日常的工作中可能我们会经常遇到程序fork失败的问题。遇到fork失败往往有两种可能性：  进程数超标：可以通过cat /proc/sys/kernel/threads-max查看 内存不足  进程数预设值往往很大，几乎不太能超标，所以fork失败的原因大部分都是由于内存不足造成的。 我们知道，由于MMU实现了虚拟地址到物理地址的转换，所以我们在申请虚拟地址时往往可以申请一大块内存">
+  <meta name="description" content="1. 前言在日常的工作中可能我们会经常遇到程序fork失败的问题。遇到fork失败往往有两种可能性：  进程数超标：可以通过cat /proc/sys/kernel/threads-max查看 内存不足  进程数预设值往往很大，几乎不太能超标，所以fork失败的原因大部分都是由于内存不足造成的。 我们知道，由于MMU实现了虚拟地址到物理地址的转换，所以我们在申请虚拟地址时往往可以申请一大块内存，这">
 <meta name="keywords" content="Linux内核,overcommit_memory">
 <meta property="og:type" content="article">
 <meta property="og:title" content="什么是overcommit_memory?">
 <meta property="og:url" content="http://yoursite.com/2022/01/23/什么是overcommit-memory/index.html">
 <meta property="og:site_name" content="量子孤岛">
-<meta property="og:description" content="1. 前言 在日常的工作中可能我们会经常遇到程序fork失败的问题。遇到fork失败往往有两种可能性：  进程数超标：可以通过cat /proc/sys/kernel/threads-max查看 内存不足  进程数预设值往往很大，几乎不太能超标，所以fork失败的原因大部分都是由于内存不足造成的。 我们知道，由于MMU实现了虚拟地址到物理地址的转换，所以我们在申请虚拟地址时往往可以申请一大块内存">
+<meta property="og:description" content="1. 前言在日常的工作中可能我们会经常遇到程序fork失败的问题。遇到fork失败往往有两种可能性：  进程数超标：可以通过cat /proc/sys/kernel/threads-max查看 内存不足  进程数预设值往往很大，几乎不太能超标，所以fork失败的原因大部分都是由于内存不足造成的。 我们知道，由于MMU实现了虚拟地址到物理地址的转换，所以我们在申请虚拟地址时往往可以申请一大块内存，这">
 <meta property="og:locale" content="zh-CN">
 <meta property="og:image" content="https://cdn.jsdelivr.net/gh/violet227/Images@master/Blog/fork.svg">
 <meta property="og:updated_time" content="2022-01-23T14:58:18.457Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="什么是overcommit_memory?">
-<meta name="twitter:description" content="1. 前言 在日常的工作中可能我们会经常遇到程序fork失败的问题。遇到fork失败往往有两种可能性：  进程数超标：可以通过cat /proc/sys/kernel/threads-max查看 内存不足  进程数预设值往往很大，几乎不太能超标，所以fork失败的原因大部分都是由于内存不足造成的。 我们知道，由于MMU实现了虚拟地址到物理地址的转换，所以我们在申请虚拟地址时往往可以申请一大块内存">
+<meta name="twitter:description" content="1. 前言在日常的工作中可能我们会经常遇到程序fork失败的问题。遇到fork失败往往有两种可能性：  进程数超标：可以通过cat /proc/sys/kernel/threads-max查看 内存不足  进程数预设值往往很大，几乎不太能超标，所以fork失败的原因大部分都是由于内存不足造成的。 我们知道，由于MMU实现了虚拟地址到物理地址的转换，所以我们在申请虚拟地址时往往可以申请一大块内存，这">
 <meta name="twitter:image" content="https://cdn.jsdelivr.net/gh/violet227/Images@master/Blog/fork.svg">
 
 
@@ -308,7 +308,7 @@
       
     
 
-    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>归档<span class="badge">15</span></a>
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>归档<span class="badge">16</span></a>
 
   </li>
 
@@ -495,8 +495,7 @@
       
 
       
-        <h3 id="1-前言"><a class="markdownIt-Anchor" href="#1-前言"></a> 1. 前言</h3>
-<p>在日常的工作中可能我们会经常遇到程序fork失败的问题。遇到fork失败往往有两种可能性：</p>
+        <h3 id="1-前言"><a href="#1-前言" class="headerlink" title="1. 前言"></a>1. 前言</h3><p>在日常的工作中可能我们会经常遇到程序fork失败的问题。遇到fork失败往往有两种可能性：</p>
 <ol>
 <li>进程数超标：可以通过<code>cat /proc/sys/kernel/threads-max</code>查看</li>
 <li>内存不足</li>
@@ -507,8 +506,7 @@
 <p>其调用链关系如下图所示。</p>
 <p><img src="https://cdn.jsdelivr.net/gh/violet227/Images@master/Blog/fork.svg" alt="fork"></p>
 <p>从图中我们可以看到，fork一步一步执行到了<code>__vm_enough_memory</code>，该接口是overcommit的核心。</p>
-<h3 id="2-原理"><a class="markdownIt-Anchor" href="#2-原理"></a> 2. 原理</h3>
-<p>Linux根据参数<code>vm.overcommit_memory</code>设置overcommit：</p>
+<h3 id="2-原理"><a href="#2-原理" class="headerlink" title="2. 原理"></a>2. 原理</h3><p>Linux根据参数<code>vm.overcommit_memory</code>设置overcommit：</p>
 <ul>
 <li><strong>0</strong> ——默认值，启发式overcommit，它允许overcommit，但太明显的overcommit会被拒绝，比如malloc一次性申请的内存大小就超过了系统总内存。</li>
 <li><strong>1</strong> ——Always overcommit. 允许<code>overcommit</code>，对内存申请来者不拒。</li>
@@ -554,15 +552,13 @@
 <li>如果<code>overcommit_kbytes</code>不为0， allow值为<code>overcommit_kbytes</code>的一半；</li>
 <li>如果<code>overcommit_kbytes</code>为0，allow值为可管理的总内存与<code>vercommit_ratio</code>的乘积百分比</li>
 </ol>
-<h3 id="3-设置"><a class="markdownIt-Anchor" href="#3-设置"></a> 3. 设置</h3>
-<p>那么如何设置overcommit的值呢？有三种方法：</p>
+<h3 id="3-设置"><a href="#3-设置" class="headerlink" title="3. 设置"></a>3. 设置</h3><p>那么如何设置overcommit的值呢？有三种方法：</p>
 <ol>
-<li>编辑**/etc/sysctl.conf** ，改<strong>vm.overcommit_memory=1</strong>，然后<strong>sysctl -p</strong>使配置文件生效</li>
+<li>编辑<strong>/etc/sysctl.conf</strong> ，改<strong>vm.overcommit_memory=1</strong>，然后<strong>sysctl -p</strong>使配置文件生效</li>
 <li>sysctl vm.overcommit_memory=1</li>
 <li>echo 1 &gt; /proc/sys/vm/overcommit_memory</li>
 </ol>
-<h4 id="4-总结"><a class="markdownIt-Anchor" href="#4-总结"></a> 4. 总结</h4>
-<p>本文通过分析内核代码粗略得分析了overcommit_memory的原理，也为后面的OOM-killer的原理做个铺垫。</p>
+<h4 id="4-总结"><a href="#4-总结" class="headerlink" title="4. 总结"></a>4. 总结</h4><p>本文通过分析内核代码粗略得分析了overcommit_memory的原理，也为后面的OOM-killer的原理做个铺垫。</p>
 
       
     </div>
@@ -730,7 +726,7 @@
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">15</span>
+                    <span class="site-state-item-count">16</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>
@@ -929,7 +925,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-前言"><span class="nav-number">1.</span> <span class="nav-text"> 1. 前言</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-原理"><span class="nav-number">2.</span> <span class="nav-text"> 2. 原理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-设置"><span class="nav-number">3.</span> <span class="nav-text"> 3. 设置</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#4-总结"><span class="nav-number">3.1.</span> <span class="nav-text"> 4. 总结</span></a></li></ol></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-3"><a class="nav-link" href="#1-前言"><span class="nav-number">1.</span> <span class="nav-text">1. 前言</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#2-原理"><span class="nav-number">2.</span> <span class="nav-text">2. 原理</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#3-设置"><span class="nav-number">3.</span> <span class="nav-text">3. 设置</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#4-总结"><span class="nav-number">3.1.</span> <span class="nav-text">4. 总结</span></a></li></ol></li></ol></div>
             
 
           </div>
@@ -971,7 +967,7 @@
     
       <span class="post-meta-item-text">站点总字数：</span>
     
-    <span title="站点总字数">82k</span>
+    <span title="站点总字数">89k</span>
   
 <div class="powered-by">
 <i class="fa fa-user-md"></i><span id="busuanzi_container_site_uv">
@@ -986,7 +982,7 @@
     
       <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
     
-    <span title="站点阅读时长">2:16</span>
+    <span title="站点阅读时长">2:28</span>
   
 </div>
 

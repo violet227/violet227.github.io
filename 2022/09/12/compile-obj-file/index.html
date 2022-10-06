@@ -96,18 +96,18 @@
 
 
 
-  <meta name="description" content="Linux kernel中.o文件的编译过程">
+  <meta name="description" content="前言在嵌入式Linux的开发过程中，内核编译是一个永远也绕不开的话题。 对内核编译系统的清晰把握，至少可以：  了解整个内核的构造 节省编译时间 在编译报错时快速定位问题 进一步了解内核的启动  本文从Linux kernel中.o文件的编译探索kbuild机制。     日期 内核版本 架构     2022-9-13 Linux5.4.200 arm     实验目标log展开我们以page_">
 <meta name="keywords" content="Linux内核,编译">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Linux kernel中.o文件的编译过程">
 <meta property="og:url" content="http://yoursite.com/2022/09/12/compile-obj-file/index.html">
 <meta property="og:site_name" content="量子孤岛">
-<meta property="og:description" content="Linux kernel中.o文件的编译过程">
+<meta property="og:description" content="前言在嵌入式Linux的开发过程中，内核编译是一个永远也绕不开的话题。 对内核编译系统的清晰把握，至少可以：  了解整个内核的构造 节省编译时间 在编译报错时快速定位问题 进一步了解内核的启动  本文从Linux kernel中.o文件的编译探索kbuild机制。     日期 内核版本 架构     2022-9-13 Linux5.4.200 arm     实验目标log展开我们以page_">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:updated_time" content="2022-09-12T13:54:45.831Z">
+<meta property="og:updated_time" content="2022-09-13T14:49:25.471Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="Linux kernel中.o文件的编译过程">
-<meta name="twitter:description" content="Linux kernel中.o文件的编译过程">
+<meta name="twitter:description" content="前言在嵌入式Linux的开发过程中，内核编译是一个永远也绕不开的话题。 对内核编译系统的清晰把握，至少可以：  了解整个内核的构造 节省编译时间 在编译报错时快速定位问题 进一步了解内核的启动  本文从Linux kernel中.o文件的编译探索kbuild机制。     日期 内核版本 架构     2022-9-13 Linux5.4.200 arm     实验目标log展开我们以page_">
 
 
 
@@ -306,7 +306,7 @@
       
     
 
-    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>归档<span class="badge">15</span></a>
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>归档<span class="badge">16</span></a>
 
   </li>
 
@@ -401,12 +401,24 @@
                 
               
 
-              <time title="创建时间：2022-09-12 21:43:07 / 修改时间：21:54:45" itemprop="dateCreated datePublished" datetime="2022-09-12T21:43:07+08:00">2022-09-12</time>
+              <time title="创建时间：2022-09-12 21:43:07" itemprop="dateCreated datePublished" datetime="2022-09-12T21:43:07+08:00">2022-09-12</time>
             
 
             
               
 
+              
+                
+                <span class="post-meta-divider">|</span>
+                
+
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-calendar-check-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">更新于</span>
+                
+                <time title="修改时间：2022-09-13 22:49:25" itemprop="dateModified" datetime="2022-09-13T22:49:25+08:00">2022-09-13</time>
               
             
           </span>
@@ -459,7 +471,7 @@
                 
                   <span class="post-meta-item-text">本文字数：</span>
                 
-                <span title="本文字数">24</span>
+                <span title="本文字数">3.1k</span>
               
 
               
@@ -473,7 +485,7 @@
                 
                   <span class="post-meta-item-text">阅读时长 &asymp;</span>
                 
-                <span title="阅读时长">1 分钟</span>
+                <span title="阅读时长">5 分钟</span>
               
             </div>
           
@@ -493,7 +505,73 @@
       
 
       
-        <h1 id="linux-kernel中o文件的编译过程"><a class="markdownIt-Anchor" href="#linux-kernel中o文件的编译过程"></a> Linux kernel中.o文件的编译过程</h1>
+        <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>在嵌入式Linux的开发过程中，内核编译是一个永远也绕不开的话题。</p>
+<p>对内核编译系统的清晰把握，至少可以：</p>
+<ul>
+<li>了解整个内核的构造</li>
+<li>节省编译时间</li>
+<li>在编译报错时快速定位问题</li>
+<li>进一步了解内核的启动</li>
+</ul>
+<p>本文从Linux kernel中.o文件的编译探索kbuild机制。</p>
+<div class="table-container">
+<table>
+<thead>
+<tr>
+<th style="text-align:left">日期</th>
+<th style="text-align:left">内核版本</th>
+<th style="text-align:left">架构</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">2022-9-13</td>
+<td style="text-align:left">Linux5.4.200</td>
+<td style="text-align:left">arm</td>
+</tr>
+</tbody>
+</table>
+</div>
+<h2 id="实验"><a href="#实验" class="headerlink" title="实验"></a>实验</h2><h3 id="目标log展开"><a href="#目标log展开" class="headerlink" title="目标log展开"></a>目标log展开</h3><p>我们以page_alloc.o的编译为例开始本次实验。</p>
+<figure class="highlight makefile"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">make mm/page_alloc.o</span><br></pre></td></tr></table></figure>
+<p>在kernel根目录下的Makefile中有：</p>
+<p><a href="https://elixir.bootlin.com/linux/v5.4.200/source/Makefile#L1733" target="_blank" rel="noopener">https://elixir.bootlin.com/linux/v5.4.200/source/Makefile#L1733</a></p>
+<figure class="highlight makefile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Single targets</span></span><br><span class="line">...</span><br><span class="line"><span class="section">$(build-dirs): prepare</span></span><br><span class="line">    <span class="variable">$(Q)</span><span class="variable">$(MAKE)</span> <span class="variable">$(build)</span>=<span class="variable">$@</span> \</span><br><span class="line">    single-build=<span class="variable">$(<span class="built_in">if</span> $(<span class="built_in">filter</span>-out <span class="variable">$@</span>/, $(single-no-ko)</span>),1) \</span><br><span class="line">    need-builtin=1 need-modorder=1</span><br></pre></td></tr></table></figure>
+<p>直接看不是很直观，kernel version 2.6的Makefile中语句较为清晰：</p>
+<figure class="highlight makefile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="section">%.o: %.c prepare scripts FORCE</span></span><br><span class="line">	<span class="variable">$(Q)</span><span class="variable">$(MAKE)</span> <span class="variable">$(build)</span>=$(build-dir) $(target-dir)<span class="variable">$(<span class="built_in">notdir</span> <span class="variable">$@</span>)</span></span><br></pre></td></tr></table></figure>
+<p>逻辑比较清晰，<code>.o</code>的文件依赖于同名的.<code>c</code>文件，然后执行一个命令来生成。</p>
+<blockquote>
+<p><strong>Tip：这里有个小技巧，注释掉构建语句，通过error log来逆向观察语句展开的结构</strong></p>
+</blockquote>
+<figure class="highlight makefile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="section">$(build-dirs): prepare</span></span><br><span class="line">    <span class="comment">#$(Q)$(MAKE) $(build)=$@ \</span></span><br><span class="line">    single-build=<span class="variable">$(<span class="built_in">if</span> $(<span class="built_in">filter</span>-out <span class="variable">$@</span>/, $(single-no-ko)</span>),1) \</span><br><span class="line">    need-builtin=1 need-modorder=1</span><br></pre></td></tr></table></figure>
+<p>再次执行编译命令，则有：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#</span><span class="bash">@make -f ./scripts/Makefile.build obj=mm \</span></span><br><span class="line">single-build=1 \</span><br><span class="line">need-builtin=1 need-modorder=1</span><br></pre></td></tr></table></figure>
+<p>从log可知，执行<code>make mm/page_alloc.o</code>又调用了一次make，使用<code>script/Makefile.build</code>这个规则文件，传入的参数是obj=mm。</p>
+<h3 id="build"><a href="#build" class="headerlink" title="build"></a>build</h3><p>由第一节的log我们知道<code>$(build)</code>展开后是：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">-f ./scripts/Makefile.build obj</span><br></pre></td></tr></table></figure>
+<p>在哪定义的呢？全局搜索后，答案是<code>scripts/Kbuild.include</code>,类似头文件的东西。</p>
+<p><a href="https://elixir.bootlin.com/linux/v5.4.200/source/scripts/Kbuild.include#L160" target="_blank" rel="noopener">https://elixir.bootlin.com/linux/v5.4.200/source/scripts/Kbuild.include#L160</a></p>
+<figure class="highlight makefile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">###</span></span><br><span class="line"><span class="comment"># Shorthand for $(Q)$(MAKE) -f scripts/Makefile.build obj=</span></span><br><span class="line"><span class="comment"># Usage:</span></span><br><span class="line"><span class="comment"># $(Q)$(MAKE) $(build)=dir</span></span><br><span class="line">build := -f <span class="variable">$(srctree)</span>/scripts/Makefile.build obj</span><br></pre></td></tr></table></figure>
+<p>好，将注意力转移到<code>scripts/Makefile.build</code>这个文件，寻找和编译<code>.o</code>相关的语句。</p>
+<figure class="highlight makefile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="variable">$(obj)</span>/%.o: <span class="variable">$(src)</span>/%.c <span class="variable">$(recordmcount_source)</span> $<span class="variable">$(objtool_dep)</span> FORCE</span><br><span class="line">	<span class="variable">$(<span class="built_in">call</span> if_changed_rule,cc_o_c)</span> <span class="comment">#调用if_changed_rull这个变量</span></span><br><span class="line">	<span class="variable">$(<span class="built_in">call</span> cmd,force_checksrc)</span>  <span class="comment">#代码检查</span></span><br></pre></td></tr></table></figure>
+<p>重点关注<code>$(call if_changed_rule,cc_o_c)</code>，这里调用了<code>if_changed_rull</code>变量，该变量同样定义在<code>scripts/Kbuild.include</code></p>
+<figure class="highlight makefile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Usage: $(call if_changed_rule,foo)</span></span><br><span class="line"><span class="comment"># Will check if $(cmd_foo) or any of the prerequisites changed,</span></span><br><span class="line"><span class="comment"># and if so will execute $(rule_foo).</span></span><br><span class="line">if_changed_rule = <span class="variable">$(<span class="built_in">if</span> $(any-prereq)</span>$(cmd-check),$(rule_$(1)),@:)</span><br></pre></td></tr></table></figure>
+<p>这是一条逻辑判断语句，当条件为真，执行逗号之前的动作。当条件为假，则执行后面的<code>@:</code>。这里的<code>@:</code>为的是减少一些log输出，具体可以看提交：<a href="https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=2aedcd098a9448b11eab895ee79acf519686555a" target="_blank" rel="noopener">kernel/git/torvalds/linux.git - Linux kernel source tree</a></p>
+<p>而如果条件为真，<code>rule_$(1)</code>展开就是<code>rule_cc_o_c</code>。</p>
+<p>好，现在回到<code>scripts/Makefile.build</code>，寻找<code>rule_cc_o_c</code>的定义：</p>
+<figure class="highlight shell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">define rule_cc_o_c</span><br><span class="line"><span class="meta">	$</span><span class="bash">(call cmd_and_fixdep,cc_o_c)</span></span><br><span class="line"><span class="meta">	$</span><span class="bash">(call cmd,gen_ksymdeps)</span></span><br><span class="line"><span class="meta">	$</span><span class="bash">(call cmd,checksrc)</span></span><br><span class="line"><span class="meta">	$</span><span class="bash">(call cmd,checkdoc)</span></span><br><span class="line"><span class="meta">	$</span><span class="bash">(call cmd,objtool)</span></span><br><span class="line"><span class="meta">	$</span><span class="bash">(call cmd,modversions_c)</span></span><br><span class="line"><span class="meta">	$</span><span class="bash">(call cmd,record_mcount)</span></span><br><span class="line">endef</span><br></pre></td></tr></table></figure>
+<p>OK，离故事接近真相还差最后一步，<code>$(call cmd_and_fixdep,cc_o_c)</code>语句是我们重点关注的。同样是call函数，所以在此回到头文件<code>scripts/Kbuild.include</code>寻找定义：</p>
+<figure class="highlight reasonml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">cmd_and_fixdep =                          \</span><br><span class="line">	<span class="constructor">$(<span class="params">echo</span>-<span class="params">cmd</span>)</span> <span class="constructor">$(<span class="params">cmd_$</span>(1)</span>);              \</span><br><span class="line">	...</span><br></pre></td></tr></table></figure>
+<p>根据经验，再次展开就是<code>cmd_cc_o_c</code>了，它还是在scripts/Makefile.build文件定义。</p>
+<figure class="highlight makefile"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cmd_cc_o_c = <span class="variable">$(CC)</span> <span class="variable">$(c_flags)</span> -c -o <span class="variable">$@</span> <span class="variable">$&lt;</span></span><br></pre></td></tr></table></figure>
+<p>终于，真相大白！</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p><code>.o</code>文件的编译一共分为如下四个步骤：</p>
+<figure class="highlight makefile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">  Makefile</span><br><span class="line">  ---------------</span><br><span class="line">  1: %.o: %.c</span><br><span class="line">  	make -f scripts/Makefile.build obj=mm </span><br><span class="line"></span><br><span class="line">  scripts/Makefile.build</span><br><span class="line">  ---------------</span><br><span class="line">  2: <span class="variable">$(obj)</span>/%.o: <span class="variable">$(src)</span>/%.c</span><br><span class="line">  	<span class="variable">$(<span class="built_in">call</span> if_changed_rule,cc_o_c)</span></span><br><span class="line"></span><br><span class="line">  scripts/Makefile.build</span><br><span class="line">  ---------------</span><br><span class="line">  3: rule_cc_o_c</span><br><span class="line">  	<span class="variable">$(<span class="built_in">call</span> cmd_and_fixdep,cc_o_c)</span></span><br><span class="line"></span><br><span class="line">  scripts/Makefile.build</span><br><span class="line">  ---------------</span><br><span class="line">  4: cmd_cc_o_c</span><br><span class="line"><span class="variable">$(CC)</span> <span class="variable">$(c_flags)</span> -c -o <span class="variable">$@</span> <span class="variable">$&lt;</span></span><br></pre></td></tr></table></figure>
+<p>这里重点强调下前面反复提到的两个文件：</p>
+<ul>
+<li><code>scripts/Makefile.build</code>：包含了几乎所有的重要规则</li>
+<li><code>scripts/Kbuild.include</code>：类似于头文件，包含很多重要函数</li>
+</ul>
 
       
     </div>
@@ -525,7 +603,7 @@
   <p><span>本文标题:</span><a href="/2022/09/12/compile-obj-file/">Linux kernel中.o文件的编译过程</a></p>
   <p><span>文章作者:</span><a href="/" title="访问 孤岛violet 的个人博客">孤岛violet</a></p>
   <p><span>发布时间:</span>2022年09月12日 - 21:43</p>
-  <p><span>最后更新:</span>2022年09月12日 - 21:54</p>
+  <p><span>最后更新:</span>2022年09月13日 - 22:49</p>
   <p><span>原始链接:</span><a href="/2022/09/12/compile-obj-file/" title="Linux kernel中.o文件的编译过程">http://yoursite.com/2022/09/12/compile-obj-file/</a>
     <span class="copy-path" title="点击复制文章链接"><i class="fa fa-clipboard" data-clipboard-text="http://yoursite.com/2022/09/12/compile-obj-file/" aria-label="复制成功！"></i></span>
   </p>
@@ -586,6 +664,10 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2022/09/13/vmlinux/" rel="prev" title="vmlinux是如何被编译出来的？">
+                vmlinux是如何被编译出来的？ <i class="fa fa-chevron-right"></i>
+              </a>
             
           </div>
         </div>
@@ -657,7 +739,7 @@
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">15</span>
+                    <span class="site-state-item-count">16</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>
@@ -856,7 +938,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-1"><a class="nav-link" href="#linux-kernel中o文件的编译过程"><span class="nav-number">1.</span> <span class="nav-text"> Linux kernel中.o文件的编译过程</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#实验"><span class="nav-number">2.</span> <span class="nav-text">实验</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#目标log展开"><span class="nav-number">2.1.</span> <span class="nav-text">目标log展开</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#build"><span class="nav-number">2.2.</span> <span class="nav-text">build</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#总结"><span class="nav-number">3.</span> <span class="nav-text">总结</span></a></li></ol></div>
             
 
           </div>
@@ -898,7 +980,7 @@
     
       <span class="post-meta-item-text">站点总字数：</span>
     
-    <span title="站点总字数">82k</span>
+    <span title="站点总字数">89k</span>
   
 <div class="powered-by">
 <i class="fa fa-user-md"></i><span id="busuanzi_container_site_uv">
@@ -913,7 +995,7 @@
     
       <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
     
-    <span title="站点阅读时长">2:16</span>
+    <span title="站点阅读时长">2:28</span>
   
 </div>
 
