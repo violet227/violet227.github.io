@@ -44,6 +44,35 @@
   </entry>
   
   <entry>
+    <title>kernel启动镜像不是vmlinux，而是它！</title>
+    <link href="http://yoursite.com/2022/09/12/bzImage/"/>
+    <id>http://yoursite.com/2022/09/12/bzImage/</id>
+    <published>2022-09-12T13:43:07.000Z</published>
+    <updated>2022-10-07T09:02:19.377Z</updated>
+    
+    <content type="html"><![CDATA[<p>上一节我们介绍了vmlinux的编译过程。vmlinux是一个ELF文件，上百M，无法直接flash到板子上。不同架构最终生成的启动镜像略有区别，一般地：</p><ul><li>通过编译生成<code>vmlinux</code>和<code>System.map</code></li><li>通过<code>objcopy</code>移除<code>vmlinux</code>中不必要段，输出binary格式Image</li><li>再对Image进行压缩，输出不同格式的压缩文件，比如gzip对应的<code>Image.gz</code>，</li><li>最后通过工具加上BootLoader可以识别的header用于启动引导。</li></ul><p>我们重点关注arm64架构的编译情况。</p><p>根目录的Makefile include了不同架构的Makefile文件：</p><p><a href="https://elixir.bootlin.com/linux/v5.4.200/source/Makefile#L583" target="_blank" rel="noopener">https://elixir.bootlin.com/linux/v5.4.200/source/Makefile#L583</a></p><figure class="highlight makefile"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">include</span> arch/<span class="variable">$(SRCARCH)</span>/Makefile</span><br></pre></td></tr></table></figure><p>arm64下的Makefile中：</p><figure class="highlight makefile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Default target when executing plain make</span></span><br><span class="line">boot:= arch/arm64/boot</span><br><span class="line">KBUILD_IMAGE:= <span class="variable">$(boot)</span>/Image.gz</span><br><span class="line"></span><br><span class="line"><span class="section">all:Image.gz</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="section">Image: vmlinux</span></span><br><span class="line"><span class="variable">$(Q)</span><span class="variable">$(MAKE)</span> <span class="variable">$(build)</span>=<span class="variable">$(boot)</span> <span class="variable">$(boot)</span>/<span class="variable">$@</span></span><br><span class="line"></span><br><span class="line"><span class="section">Image.%: Image</span></span><br><span class="line"><span class="variable">$(Q)</span><span class="variable">$(MAKE)</span> <span class="variable">$(build)</span>=<span class="variable">$(boot)</span> <span class="variable">$(boot)</span>/<span class="variable">$@</span></span><br><span class="line"></span><br><span class="line">zinstall install:</span><br><span class="line"><span class="variable">$(Q)</span><span class="variable">$(MAKE)</span> <span class="variable">$(build)</span>=<span class="variable">$(boot)</span> <span class="variable">$@</span></span><br></pre></td></tr></table></figure><p>由此可以发现，arm64的启动镜像为压缩后的<code>Image.gz</code>.</p><p>再进一步走到boot目录下的Makefile<a href="https://elixir.bootlin.com/linux/v5.4.200/source" target="_blank" rel="noopener">/</a><a href="https://elixir.bootlin.com/linux/v5.4.200/source/arch" target="_blank" rel="noopener">arch</a>/<a href="https://elixir.bootlin.com/linux/v5.4.200/source/arch/arm64" target="_blank" rel="noopener">arm64</a>/<a href="https://elixir.bootlin.com/linux/v5.4.200/source/arch/arm64/boot" target="_blank" rel="noopener">boot</a>/<a href="https://elixir.bootlin.com/linux/v5.4.200/source/arch/arm64/boot/Makefile" target="_blank" rel="noopener">Makefile</a></p><figure class="highlight makefile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">OBJCOPYFLAGS_Image :=-O binary -R .note -R .note.gnu.build-id -R .comment -S</span><br><span class="line"></span><br><span class="line">targets := Image Image.bz2 Image.gz Image.lz4 Image.lzma Image.lzo</span><br><span class="line"></span><br><span class="line"><span class="variable">$(obj)</span>/Image: vmlinux FORCE</span><br><span class="line"><span class="variable">$(<span class="built_in">call</span> if_changed,objcopy)</span></span><br><span class="line"></span><br><span class="line"><span class="variable">$(obj)</span>/Image.bz2: <span class="variable">$(obj)</span>/Image FORCE</span><br><span class="line"><span class="variable">$(<span class="built_in">call</span> if_changed,bzip2)</span></span><br><span class="line"></span><br><span class="line"><span class="variable">$(obj)</span>/Image.gz: <span class="variable">$(obj)</span>/Image FORCE</span><br><span class="line"><span class="variable">$(<span class="built_in">call</span> if_changed,gzip)</span></span><br><span class="line">...</span><br><span class="line"></span><br><span class="line"><span class="section">install:</span></span><br><span class="line"><span class="variable">$(CONFIG_SHELL)</span> <span class="variable">$(srctree)</span>/<span class="variable">$(src)</span>/install.sh <span class="variable">$(KERNELRELEASE)</span> \</span><br><span class="line"><span class="variable">$(obj)</span>/Image System.map <span class="string">"<span class="variable">$(INSTALL_PATH)</span>"</span></span><br><span class="line"></span><br><span class="line"><span class="section">zinstall:</span></span><br><span class="line"><span class="variable">$(CONFIG_SHELL)</span> <span class="variable">$(srctree)</span>/<span class="variable">$(src)</span>/install.sh <span class="variable">$(KERNELRELEASE)</span> \</span><br><span class="line"><span class="variable">$(obj)</span>/Image.gz System.map <span class="string">"<span class="variable">$(INSTALL_PATH)</span>"</span></span><br></pre></td></tr></table></figure><p>install脚本如下<a href="https://elixir.bootlin.com/linux/v5.4.200/source" target="_blank" rel="noopener">/</a><a href="https://elixir.bootlin.com/linux/v5.4.200/source/arch" target="_blank" rel="noopener">arch</a>/<a href="https://elixir.bootlin.com/linux/v5.4.200/source/arch/arm64" target="_blank" rel="noopener">arm64</a>/<a href="https://elixir.bootlin.com/linux/v5.4.200/source/arch/arm64/boot" target="_blank" rel="noopener">boot</a>/<a href="https://elixir.bootlin.com/linux/v5.4.200/source/arch/arm64/boot/install.sh" target="_blank" rel="noopener">install.sh</a></p><figure class="highlight makefile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Arguments:</span></span><br><span class="line"><span class="comment">#   $1 - kernel version</span></span><br><span class="line"><span class="comment">#   $2 - kernel image file</span></span><br><span class="line"><span class="comment">#   $3 - kernel map file</span></span><br><span class="line"><span class="comment">#   $4 - default install path (blank if root directory)</span></span><br><span class="line"></span><br><span class="line">...</span><br><span class="line">if [ <span class="string">"$(basename $2)"</span> = <span class="string">"Image.gz"</span> ]; then</span><br><span class="line"><span class="comment"># Compressed install</span></span><br><span class="line">  echo <span class="string">"Installing compressed kernel"</span></span><br><span class="line">  base=vmlinuz</span><br><span class="line"><span class="keyword">else</span></span><br><span class="line"><span class="comment"># Normal install</span></span><br><span class="line">  echo <span class="string">"Installing normal kernel"</span></span><br><span class="line">  base=vmlinux</span><br><span class="line">fi</span><br><span class="line"></span><br><span class="line">if [ -f $4/$base-$1 ]; then</span><br><span class="line">  mv $4/$base-$1 $4/$base-$1.old</span><br><span class="line">fi</span><br><span class="line">cat $2 &gt; $4/$base-$1</span><br></pre></td></tr></table></figure><p>用一张图总结如下：</p><p><a href="https://imgse.com/i/x8FfYD" target="_blank" rel="noopener"><img src="https://s1.ax1x.com/2022/10/07/x8FfYD.png" alt="x8FfYD.png"></a></p>]]></content>
+    
+    <summary type="html">
+    
+      
+      
+        &lt;p&gt;上一节我们介绍了vmlinux的编译过程。vmlinux是一个ELF文件，上百M，无法直接flash到板子上。不同架构最终生成的启动镜像略有区别，一般地：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;通过编译生成&lt;code&gt;vmlinux&lt;/code&gt;和&lt;code&gt;System.map&lt;/c
+      
+    
+    </summary>
+    
+      <category term="Linux内核" scheme="http://yoursite.com/categories/Linux%E5%86%85%E6%A0%B8/"/>
+    
+    
+      <category term="Linux内核" scheme="http://yoursite.com/tags/Linux%E5%86%85%E6%A0%B8/"/>
+    
+      <category term="编译" scheme="http://yoursite.com/tags/%E7%BC%96%E8%AF%91/"/>
+    
+  </entry>
+  
+  <entry>
     <title>Linux kernel中.o文件的编译过程</title>
     <link href="http://yoursite.com/2022/09/12/compile-obj-file/"/>
     <id>http://yoursite.com/2022/09/12/compile-obj-file/</id>
@@ -379,32 +408,6 @@
   </entry>
   
   <entry>
-    <title>一款类似于mac-dock栏的windows软件</title>
-    <link href="http://yoursite.com/2019/01/28/%E4%B8%80%E6%AC%BE%E7%B1%BB%E4%BC%BC%E4%BA%8Emac-dock%E6%A0%8F%E7%9A%84windows%E8%BD%AF%E4%BB%B6/"/>
-    <id>http://yoursite.com/2019/01/28/一款类似于mac-dock栏的windows软件/</id>
-    <published>2019-01-28T08:41:17.000Z</published>
-    <updated>2022-01-23T07:55:18.738Z</updated>
-    
-    <content type="html"><![CDATA[<p>原文链接：一款类似于mac-dock栏的windows软件</p><h3 id="一款类似于mac-dock栏的windows软件"><a href="#一款类似于mac-dock栏的windows软件" class="headerlink" title="一款类似于mac-dock栏的windows软件"></a>一款类似于mac-dock栏的windows软件</h3><p><a href="https://imgchr.com/i/kXj3PU" target="_blank" rel="noopener"><img src="https://s2.ax1x.com/2019/03/05/kXj3PU.md.png" alt="kXj3PU.md.png"></a><br>软件名称叫 <code>Winstep Nexus Ultimate</code></p><p>软件链接如下：</p><p>链接：<a href="https://www.lanzous.com/i1xnevc" target="_blank" rel="noopener">https://www.lanzous.com/i1xnevc</a>    密码:5vsy</p><h4 id="安装破解方法"><a href="#安装破解方法" class="headerlink" title="安装破解方法"></a>安装破解方法</h4><ol><li>下载安装Winstep Nexus，安装完成后不要启动</li><li>以管理员权限运行Activation.exe，将其安装到Winstep Nexus默认目录中</li><li>启动Winstep Nexus，输入任意用户名和密钥注册</li><li>重启Winstep Nexus即为激活版</li></ol><p>注：不能更新，如果更新，可重新执2-4步  </p><h4 id="效果图"><a href="#效果图" class="headerlink" title="效果图"></a>效果图</h4><p>这是我的桌面，软件的主题有很多，挑自己喜欢的风格和颜色即可。</p><p><a href="https://imgchr.com/i/kXvZFK" target="_blank" rel="noopener"><img src="https://s2.ax1x.com/2019/03/05/kXvZFK.md.png" alt="kXvZFK.md.png"></a></p>]]></content>
-    
-    <summary type="html">
-    
-      
-      
-        &lt;p&gt;原文链接：一款类似于mac-dock栏的windows软件&lt;/p&gt;
-&lt;h3 id=&quot;一款类似于mac-dock栏的windows软件&quot;&gt;&lt;a href=&quot;#一款类似于mac-dock栏的windows软件&quot; class=&quot;headerlink&quot; title=&quot;一款类似于ma
-      
-    
-    </summary>
-    
-      <category term="黑科技" scheme="http://yoursite.com/categories/%E9%BB%91%E7%A7%91%E6%8A%80/"/>
-    
-    
-      <category term="黑科技" scheme="http://yoursite.com/tags/%E9%BB%91%E7%A7%91%E6%8A%80/"/>
-    
-  </entry>
-  
-  <entry>
     <title>误差补偿模型</title>
     <link href="http://yoursite.com/2019/01/28/%E8%AF%AF%E5%B7%AE%E8%A1%A5%E5%81%BF%E6%A8%A1%E5%9E%8B/"/>
     <id>http://yoursite.com/2019/01/28/误差补偿模型/</id>
@@ -430,6 +433,32 @@
       <category term="坐标转换" scheme="http://yoursite.com/tags/%E5%9D%90%E6%A0%87%E8%BD%AC%E6%8D%A2/"/>
     
       <category term="camera calibrate" scheme="http://yoursite.com/tags/camera-calibrate/"/>
+    
+  </entry>
+  
+  <entry>
+    <title>一款类似于mac-dock栏的windows软件</title>
+    <link href="http://yoursite.com/2019/01/28/%E4%B8%80%E6%AC%BE%E7%B1%BB%E4%BC%BC%E4%BA%8Emac-dock%E6%A0%8F%E7%9A%84windows%E8%BD%AF%E4%BB%B6/"/>
+    <id>http://yoursite.com/2019/01/28/一款类似于mac-dock栏的windows软件/</id>
+    <published>2019-01-28T08:41:17.000Z</published>
+    <updated>2022-01-23T07:55:18.738Z</updated>
+    
+    <content type="html"><![CDATA[<p>原文链接：一款类似于mac-dock栏的windows软件</p><h3 id="一款类似于mac-dock栏的windows软件"><a href="#一款类似于mac-dock栏的windows软件" class="headerlink" title="一款类似于mac-dock栏的windows软件"></a>一款类似于mac-dock栏的windows软件</h3><p><a href="https://imgchr.com/i/kXj3PU" target="_blank" rel="noopener"><img src="https://s2.ax1x.com/2019/03/05/kXj3PU.md.png" alt="kXj3PU.md.png"></a><br>软件名称叫 <code>Winstep Nexus Ultimate</code></p><p>软件链接如下：</p><p>链接：<a href="https://www.lanzous.com/i1xnevc" target="_blank" rel="noopener">https://www.lanzous.com/i1xnevc</a>    密码:5vsy</p><h4 id="安装破解方法"><a href="#安装破解方法" class="headerlink" title="安装破解方法"></a>安装破解方法</h4><ol><li>下载安装Winstep Nexus，安装完成后不要启动</li><li>以管理员权限运行Activation.exe，将其安装到Winstep Nexus默认目录中</li><li>启动Winstep Nexus，输入任意用户名和密钥注册</li><li>重启Winstep Nexus即为激活版</li></ol><p>注：不能更新，如果更新，可重新执2-4步  </p><h4 id="效果图"><a href="#效果图" class="headerlink" title="效果图"></a>效果图</h4><p>这是我的桌面，软件的主题有很多，挑自己喜欢的风格和颜色即可。</p><p><a href="https://imgchr.com/i/kXvZFK" target="_blank" rel="noopener"><img src="https://s2.ax1x.com/2019/03/05/kXvZFK.md.png" alt="kXvZFK.md.png"></a></p>]]></content>
+    
+    <summary type="html">
+    
+      
+      
+        &lt;p&gt;原文链接：一款类似于mac-dock栏的windows软件&lt;/p&gt;
+&lt;h3 id=&quot;一款类似于mac-dock栏的windows软件&quot;&gt;&lt;a href=&quot;#一款类似于mac-dock栏的windows软件&quot; class=&quot;headerlink&quot; title=&quot;一款类似于ma
+      
+    
+    </summary>
+    
+      <category term="黑科技" scheme="http://yoursite.com/categories/%E9%BB%91%E7%A7%91%E6%8A%80/"/>
+    
+    
+      <category term="黑科技" scheme="http://yoursite.com/tags/%E9%BB%91%E7%A7%91%E6%8A%80/"/>
     
   </entry>
   

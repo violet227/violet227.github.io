@@ -96,28 +96,20 @@
 
 
 
-  <meta name="description" content="就像叶子从痛苦的蜷缩中要用力舒展一样，人也要从不假思索的蒙昧里挣脱，这才是活着。 ​                                                                        ——柴静《看见》  演示视频见B站这是我大学作为项目负责人的封山之作，完成了毕业前要做一件真正的实物产品的心愿。这件作品耗费了我巨大的心血，最终的实现效果也没有达到我理想">
-<meta name="keywords" content="避障,超声波检测,爬楼装置">
+  <meta name="description" content="上一节我们介绍了vmlinux的编译过程。vmlinux是一个ELF文件，上百M，无法直接flash到板子上。不同架构最终生成的启动镜像略有区别，一般地：  通过编译生成vmlinux和System.map 通过objcopy移除vmlinux中不必要段，输出binary格式Image 再对Image进行压缩，输出不同格式的压缩文件，比如gzip对应的Image.gz， 最后通过工具加上BootL">
+<meta name="keywords" content="Linux内核,编译">
 <meta property="og:type" content="article">
-<meta property="og:title" content="智能寻迹爬楼载重清洁装置">
-<meta property="og:url" content="http://yoursite.com/2019/03/10/爬楼小车/index.html">
+<meta property="og:title" content="kernel启动镜像不是vmlinux，而是它！">
+<meta property="og:url" content="http://yoursite.com/2022/09/12/bzImage/index.html">
 <meta property="og:site_name" content="量子孤岛">
-<meta property="og:description" content="就像叶子从痛苦的蜷缩中要用力舒展一样，人也要从不假思索的蒙昧里挣脱，这才是活着。 ​                                                                        ——柴静《看见》  演示视频见B站这是我大学作为项目负责人的封山之作，完成了毕业前要做一件真正的实物产品的心愿。这件作品耗费了我巨大的心血，最终的实现效果也没有达到我理想">
+<meta property="og:description" content="上一节我们介绍了vmlinux的编译过程。vmlinux是一个ELF文件，上百M，无法直接flash到板子上。不同架构最终生成的启动镜像略有区别，一般地：  通过编译生成vmlinux和System.map 通过objcopy移除vmlinux中不必要段，输出binary格式Image 再对Image进行压缩，输出不同格式的压缩文件，比如gzip对应的Image.gz， 最后通过工具加上BootL">
 <meta property="og:locale" content="zh-CN">
-<meta property="og:image" content="https://s2.ax1x.com/2019/03/10/A9d4I0.md.png">
-<meta property="og:image" content="https://s2.ax1x.com/2019/03/10/A9KdMT.png">
-<meta property="og:image" content="https://s2.ax1x.com/2019/03/10/A9wMQg.png">
-<meta property="og:image" content="https://s2.ax1x.com/2019/03/10/A9KDZ4.png">
-<meta property="og:image" content="https://s2.ax1x.com/2019/03/10/A9K5ee.png">
-<meta property="og:image" content="https://s2.ax1x.com/2019/03/10/A9Kood.png">
-<meta property="og:image" content="https://s2.ax1x.com/2019/03/10/A9Muk9.png">
-<meta property="og:image" content="https://s2.ax1x.com/2019/03/10/A9MRts.png">
-<meta property="og:image" content="https://s2.ax1x.com/2019/03/10/A9QV3t.png">
-<meta property="og:updated_time" content="2019-07-23T13:06:33.304Z">
+<meta property="og:image" content="https://s1.ax1x.com/2022/10/07/x8FfYD.png">
+<meta property="og:updated_time" content="2022-10-07T09:02:19.377Z">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:title" content="智能寻迹爬楼载重清洁装置">
-<meta name="twitter:description" content="就像叶子从痛苦的蜷缩中要用力舒展一样，人也要从不假思索的蒙昧里挣脱，这才是活着。 ​                                                                        ——柴静《看见》  演示视频见B站这是我大学作为项目负责人的封山之作，完成了毕业前要做一件真正的实物产品的心愿。这件作品耗费了我巨大的心血，最终的实现效果也没有达到我理想">
-<meta name="twitter:image" content="https://s2.ax1x.com/2019/03/10/A9d4I0.md.png">
+<meta name="twitter:title" content="kernel启动镜像不是vmlinux，而是它！">
+<meta name="twitter:description" content="上一节我们介绍了vmlinux的编译过程。vmlinux是一个ELF文件，上百M，无法直接flash到板子上。不同架构最终生成的启动镜像略有区别，一般地：  通过编译生成vmlinux和System.map 通过objcopy移除vmlinux中不必要段，输出binary格式Image 再对Image进行压缩，输出不同格式的压缩文件，比如gzip对应的Image.gz， 最后通过工具加上BootL">
+<meta name="twitter:image" content="https://s1.ax1x.com/2022/10/07/x8FfYD.png">
 
 
 
@@ -126,7 +118,7 @@
 
 
 
-  <link rel="canonical" href="http://yoursite.com/2019/03/10/爬楼小车/">
+  <link rel="canonical" href="http://yoursite.com/2022/09/12/bzImage/">
 
 
 
@@ -136,7 +128,7 @@
   };
 </script>
 
-  <title>智能寻迹爬楼载重清洁装置 | 量子孤岛</title>
+  <title>kernel启动镜像不是vmlinux，而是它！ | 量子孤岛</title>
   
 
 
@@ -368,7 +360,7 @@
   
   
   <div class="post-block">
-    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/03/10/爬楼小车/">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2022/09/12/bzImage/">
 
     <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
       <meta itemprop="name" content="孤岛violet">
@@ -385,7 +377,7 @@
 
         
         
-          <h1 class="post-title" itemprop="name headline">智能寻迹爬楼载重清洁装置
+          <h1 class="post-title" itemprop="name headline">kernel启动镜像不是vmlinux，而是它！
 
               
             
@@ -411,7 +403,7 @@
                 
               
 
-              <time title="创建时间：2019-03-10 22:09:18" itemprop="dateCreated datePublished" datetime="2019-03-10T22:09:18+08:00">2019-03-10</time>
+              <time title="创建时间：2022-09-12 21:43:07" itemprop="dateCreated datePublished" datetime="2022-09-12T21:43:07+08:00">2022-09-12</time>
             
 
             
@@ -428,7 +420,7 @@
                 
                   <span class="post-meta-item-text">更新于</span>
                 
-                <time title="修改时间：2019-07-23 21:06:33" itemprop="dateModified" datetime="2019-07-23T21:06:33+08:00">2019-07-23</time>
+                <time title="修改时间：2022-10-07 17:02:19" itemprop="dateModified" datetime="2022-10-07T17:02:19+08:00">2022-10-07</time>
               
             
           </span>
@@ -445,7 +437,7 @@
                 <span class="post-meta-item-text">分类于</span>
               
               
-                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing"><a href="/categories/Projects/" itemprop="url" rel="index"><span itemprop="name">Projects</span></a></span>
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing"><a href="/categories/Linux内核/" itemprop="url" rel="index"><span itemprop="name">Linux内核</span></a></span>
 
                 
                 
@@ -481,7 +473,7 @@
                 
                   <span class="post-meta-item-text">本文字数：</span>
                 
-                <span title="本文字数">2.8k</span>
+                <span title="本文字数">1.8k</span>
               
 
               
@@ -495,7 +487,7 @@
                 
                   <span class="post-meta-item-text">阅读时长 &asymp;</span>
                 
-                <span title="阅读时长">5 分钟</span>
+                <span title="阅读时长">3 分钟</span>
               
             </div>
           
@@ -515,37 +507,26 @@
       
 
       
-        <blockquote>
-<p>就像叶子从痛苦的蜷缩中要用力舒展一样，人也要从不假思索的蒙昧里挣脱，这才是活着。</p>
-<p>​                                                                        ——柴静《看见》</p>
-</blockquote>
-<h2 id="演示视频见B站"><a href="#演示视频见B站" class="headerlink" title="演示视频见B站"></a><a href="https://www.bilibili.com/video/av55167725" target="_blank" rel="noopener">演示视频见B站</a></h2><p>这是我大学作为项目负责人的封山之作，完成了毕业前要做一件真正的实物产品的心愿。这件作品耗费了我巨大的心血，最终的实现效果也没有达到我理想的状态。实践本就没有完美的事情，永远都在探索完美的路上。下文是我在毕业后总结归纳的一些细枝末节，搭建博客之后开学的第二周，作为一个会议记录于此，并时刻提醒自己，接受自己的不完美，但是持续不断的努力。</p>
-<p><a href="https://imgchr.com/i/A9d4I0" target="_blank" rel="noopener"><img src="https://s2.ax1x.com/2019/03/10/A9d4I0.md.png" alt="A9d4I0.md.png"></a></p>
-<h2 id="技术领域"><a href="#技术领域" class="headerlink" title="技术领域"></a><strong>技术领域</strong></h2><p>本发明涉及智能寻迹爬楼载重清洁装置，属于服务类机器人技术领域，其主要功能是实现上下楼负重搬运以及楼梯清洁，可以在没有电梯的建筑楼层使用。</p>
-<h2 id="背景技术"><a href="#背景技术" class="headerlink" title="背景技术"></a>背景技术</h2><p>本发明的最初目的是解决搬运诸如水桶等重物时人工上楼搬运费时费力的问题。同时考虑到楼梯各时间段使用频繁，楼梯层数较多，人力清洁工作繁重，故在尾部加装清洁装置。两者结合通过电机带传动组成搬运清洁两用型的智能装置。国内多数爬楼载重机器人，采用升降式、腿式结构，上楼缓慢效率不高且爬楼机械装置大多不适用于平地，平地使用时所受阻力较大，行动缓慢，转弯不便。基于上述背景我们设计了独特的变形前轮，实现在平路和上下楼的智能切换，以及转向装置能自动调整前轮的角度实现快速转弯。该小车前轮采用变形轮机构，可平地导向也可上下楼梯，控制方式灵活。可适用于各种工厂、住宅楼的货物搬运。同时对车尾稍加人性化设计，便可实现清洁功能，具有较大的社会价值和经济价值。</p>
-<h2 id="发明内容"><a href="#发明内容" class="headerlink" title="发明内容"></a><strong>发明内容</strong></h2><p><img src="https://s2.ax1x.com/2019/03/10/A9KdMT.png" alt="A9KdMT.png"></p>
-<p>本发明的技术方案：</p>
-<p>一种智能寻迹爬楼载重清洁装置，包括电气部分和机械部分；</p>
-<p>所述的电气部分4包括电源4-1和电气模块4-2，以控制超声波导距、单片机、舵机以及电机；</p>
-<p>所述的机械部分包括变形轮机构1、转向机构2、清洁机构3和机身5；</p>
-<p>所述的机身5包括行星轮5-1和机身车座5-2，所述的机身车座5-2为长方形的面板，所述的行星轮5-1有两个，通过轴对称固定在机身车座5-2尾部的两端；</p>
-<p>所述的变形轮机构1有两个，包括变形轮支架1-4、变形轮分支1-1、三爪卡销1-3、变形舵机1-2、圆盘支架1-6和舵盘1-5； </p>
-<p>所述的变形轮分支1-1共三个，依次连接组成轮子的外轮廓；所述的变形轮分支1-1是由三根带有弧度的杆组成的三杆机构，一根外侧杆、一根滑动杆和一根支撑杆；外侧杆构成轮子的外轮廓，其一端设有滑槽，变形轮变形时，相邻的变形轮分支1-1的滑动杆滑入滑槽中；滑动杆和支撑杆的一端均固定在外侧杆上，支撑杆的另一端固定在滑动杆上，滑动杆的另一端铰接于变形轮支架1-4上；所述的滑动杆的下端、内侧设有滑轨，三爪卡销1-3在滑轨中滑动；所述的圆盘支架1-6为中心开有圆孔的圆盘；所述的变形轮支架1-4为中空的圆柱体，圆盘支架1-6中心圆孔的直径与变形轮支架1-4的直径相同，变形轮支架1-4穿过外侧的圆盘支架1-6中心开口，并固定在外侧的圆盘支架1-6上；所述的三爪卡销1-3为一端均匀分布有三个爪的圆柱体，三爪卡销1-3的圆柱体嵌套在变形轮支架1-4的内部，三爪卡销1-3的爪插在三杆机构的滑轨内，三爪卡销1-3的圆柱体设有五个通孔；所述的变形轮分支1-1的滑动杆下部有一个通孔，通过销键和铰环将三个三杆机构均匀固定在变形轮支架1-4上；所述的变形轮支架1-4、三爪卡销1-3和外侧的圆盘支架1-6，共同固定在内侧的圆盘支架1-6上，内侧和外侧的圆盘支架1-6配合，以固定三爪卡销1-3并保证三杆机构在一个平面内移动；所述的变形舵机1-2一端带有五个插杆，通过内侧的圆盘支架1-6的中心圆孔插入三爪卡销1-3的通孔内，使变形舵机1-2与三爪卡销1-3连接；所述的变形舵机1-2，另一端安装有舵盘1-5，变形舵机1-2提供转矩，通过正反转实现变形轮整体和变型的切换；</p>
-<p><img src="https://s2.ax1x.com/2019/03/10/A9wMQg.png" alt="A9wMQg.png"></p>
-<p><img src="https://s2.ax1x.com/2019/03/10/A9KDZ4.png" alt="A9KDZ4.png"></p>
-<p><img src="https://s2.ax1x.com/2019/03/10/A9K5ee.png" alt="A9K5ee.png"></p>
-<p>所述的转向机构2包括轴承座2-1、转动连接装置2-2、转向机构电机2-3、轴2-4、转动舵机2-5、联轴器2-6、皮带2-7、球头拉杆2-8和万向节2-9；所述的轴承座2-1共两个，对称固定在机身车座5-2前部的两端；所述的轴2-4的两端固定在轴承座2-1上，轴2-4的两端安装有万向节2-9，轴2-4通过万向节2-9与舵盘1-5相连接，使变形轮机构1与转向机构2相连接；所述的转向舵机2-5固定在机身车座5-2前部，转向舵机2-5的一侧安装有转动连接装置2-2，转动连接装置2-2的两个插孔分别用于连接球头拉杆2-8，球头拉杆2-8的另一端与万向节2-9外侧连接，使得转向舵机2-5与舵盘1-5相连接；所述的联轴器2-6套装在轴2-4上，所述的转向机构电机2-3固定机身车座5-2上；所述的皮带2-7，一端套装在联轴器2-6上，另一端套装在转向机构电机2-3的输出端；所述的转向机构电机2-3通过皮带2-7和联轴器2-6带动轴2-4旋转，轴2-4来传递动力，带动变形轮机构1运转；所述的转动舵机2-5工作时会左右摆动，球头拉杆2-8将转动舵机2-5的摆动转换为角度变化传递给万向节2-9，接着将该变化传递给与万向节2-9连接的变形轮舵机1-2，从而完成转向工作；</p>
-<p><img src="https://s2.ax1x.com/2019/03/10/A9Kood.png" alt="A9Kood.png"></p>
-<p>所述的清洁机构3位于装置的尾部，包括齿条3-1、刷子3-2、清洁机构电机3-3和齿轮3-4；所述的齿条3-1固定在机身车座5-2的尾部，所述的清洁机构电机3-3固定在机身车座5-2上，所述的齿轮3-4固定在清洁机构电机3-3的输出端，齿轮3-4与齿条3-1相互咬合；所述的刷子3-2位于机身车座5-2的尾部的底表面，通过螺栓活动连接，与齿条3-1固定连接；所述的清洁机构电机3-3的转动带动齿轮3-4转动，进而使齿条3-1横向往复运动，带动刷子3-2的往复运动，实现楼梯的清洁功能；</p>
-<p><img src="https://s2.ax1x.com/2019/03/10/A9Muk9.png" alt="A9Muk9.png"></p>
-<p>所述的电气部分4由电源4-1和电气模块4-2组成；所述的电源4-1和电气模块4-2并排固定在机身车座5-2中间位置；所述的电气模块4-2包括单片机模块和超声波模块。</p>
-<p><img src="https://s2.ax1x.com/2019/03/10/A9MRts.png" alt="A9MRts.png"></p>
-<p><img src="https://s2.ax1x.com/2019/03/10/A9QV3t.png" alt="A9QV3t.png"></p>
-<p>所述的机身车座5-2为亚克力板材质。</p>
-<p>所述的清洁机构电机3-3为37型减速电机。</p>
-<p>所述的变形舵机1-2为RDS3109双轴舵机。</p>
-<p>所述的轴2-4的直径为6mm。</p>
-<p>本发明的有益效果：车采用变形轮结构：平地导向时为圆形，上下楼梯时一分为三，控制方式灵活；该车克服了现有爬楼装置只用于爬楼且平地转向、前行困难的缺点，通过变形轮实现平地上楼自由转换。变形轮简化了传统的铰链机构改用销传动在导轨中移动实现变形，结构简单且不失牢固与严密性，极具创造价值；上下四个超声波模块检测距离差判断墙、楼梯从而绕行和变形；车尾安装清洁装置，可自动清洁楼梯。</p>
+        <p>上一节我们介绍了vmlinux的编译过程。vmlinux是一个ELF文件，上百M，无法直接flash到板子上。不同架构最终生成的启动镜像略有区别，一般地：</p>
+<ul>
+<li>通过编译生成<code>vmlinux</code>和<code>System.map</code></li>
+<li>通过<code>objcopy</code>移除<code>vmlinux</code>中不必要段，输出binary格式Image</li>
+<li>再对Image进行压缩，输出不同格式的压缩文件，比如gzip对应的<code>Image.gz</code>，</li>
+<li>最后通过工具加上BootLoader可以识别的header用于启动引导。</li>
+</ul>
+<p>我们重点关注arm64架构的编译情况。</p>
+<p>根目录的Makefile include了不同架构的Makefile文件：</p>
+<p><a href="https://elixir.bootlin.com/linux/v5.4.200/source/Makefile#L583" target="_blank" rel="noopener">https://elixir.bootlin.com/linux/v5.4.200/source/Makefile#L583</a></p>
+<figure class="highlight makefile"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">include</span> arch/<span class="variable">$(SRCARCH)</span>/Makefile</span><br></pre></td></tr></table></figure>
+<p>arm64下的Makefile中：</p>
+<figure class="highlight makefile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Default target when executing plain make</span></span><br><span class="line">boot		:= arch/arm64/boot</span><br><span class="line">KBUILD_IMAGE	:= <span class="variable">$(boot)</span>/Image.gz</span><br><span class="line"></span><br><span class="line"><span class="section">all:	Image.gz</span></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="section">Image: vmlinux</span></span><br><span class="line">	<span class="variable">$(Q)</span><span class="variable">$(MAKE)</span> <span class="variable">$(build)</span>=<span class="variable">$(boot)</span> <span class="variable">$(boot)</span>/<span class="variable">$@</span></span><br><span class="line"></span><br><span class="line"><span class="section">Image.%: Image</span></span><br><span class="line">	<span class="variable">$(Q)</span><span class="variable">$(MAKE)</span> <span class="variable">$(build)</span>=<span class="variable">$(boot)</span> <span class="variable">$(boot)</span>/<span class="variable">$@</span></span><br><span class="line"></span><br><span class="line">zinstall install:</span><br><span class="line">	<span class="variable">$(Q)</span><span class="variable">$(MAKE)</span> <span class="variable">$(build)</span>=<span class="variable">$(boot)</span> <span class="variable">$@</span></span><br></pre></td></tr></table></figure>
+<p>由此可以发现，arm64的启动镜像为压缩后的<code>Image.gz</code>.</p>
+<p>再进一步走到boot目录下的Makefile<a href="https://elixir.bootlin.com/linux/v5.4.200/source" target="_blank" rel="noopener">/</a><a href="https://elixir.bootlin.com/linux/v5.4.200/source/arch" target="_blank" rel="noopener">arch</a>/<a href="https://elixir.bootlin.com/linux/v5.4.200/source/arch/arm64" target="_blank" rel="noopener">arm64</a>/<a href="https://elixir.bootlin.com/linux/v5.4.200/source/arch/arm64/boot" target="_blank" rel="noopener">boot</a>/<a href="https://elixir.bootlin.com/linux/v5.4.200/source/arch/arm64/boot/Makefile" target="_blank" rel="noopener">Makefile</a></p>
+<figure class="highlight makefile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line">OBJCOPYFLAGS_Image :=-O binary -R .note -R .note.gnu.build-id -R .comment -S</span><br><span class="line"></span><br><span class="line">targets := Image Image.bz2 Image.gz Image.lz4 Image.lzma Image.lzo</span><br><span class="line"></span><br><span class="line"><span class="variable">$(obj)</span>/Image: vmlinux FORCE</span><br><span class="line">	<span class="variable">$(<span class="built_in">call</span> if_changed,objcopy)</span></span><br><span class="line"></span><br><span class="line"><span class="variable">$(obj)</span>/Image.bz2: <span class="variable">$(obj)</span>/Image FORCE</span><br><span class="line">	<span class="variable">$(<span class="built_in">call</span> if_changed,bzip2)</span></span><br><span class="line"></span><br><span class="line"><span class="variable">$(obj)</span>/Image.gz: <span class="variable">$(obj)</span>/Image FORCE</span><br><span class="line">	<span class="variable">$(<span class="built_in">call</span> if_changed,gzip)</span></span><br><span class="line">...</span><br><span class="line"></span><br><span class="line"><span class="section">install:</span></span><br><span class="line">	<span class="variable">$(CONFIG_SHELL)</span> <span class="variable">$(srctree)</span>/<span class="variable">$(src)</span>/install.sh <span class="variable">$(KERNELRELEASE)</span> \</span><br><span class="line">	<span class="variable">$(obj)</span>/Image System.map <span class="string">"<span class="variable">$(INSTALL_PATH)</span>"</span></span><br><span class="line"></span><br><span class="line"><span class="section">zinstall:</span></span><br><span class="line">	<span class="variable">$(CONFIG_SHELL)</span> <span class="variable">$(srctree)</span>/<span class="variable">$(src)</span>/install.sh <span class="variable">$(KERNELRELEASE)</span> \</span><br><span class="line">	<span class="variable">$(obj)</span>/Image.gz System.map <span class="string">"<span class="variable">$(INSTALL_PATH)</span>"</span></span><br></pre></td></tr></table></figure>
+<p>install脚本如下<a href="https://elixir.bootlin.com/linux/v5.4.200/source" target="_blank" rel="noopener">/</a><a href="https://elixir.bootlin.com/linux/v5.4.200/source/arch" target="_blank" rel="noopener">arch</a>/<a href="https://elixir.bootlin.com/linux/v5.4.200/source/arch/arm64" target="_blank" rel="noopener">arm64</a>/<a href="https://elixir.bootlin.com/linux/v5.4.200/source/arch/arm64/boot" target="_blank" rel="noopener">boot</a>/<a href="https://elixir.bootlin.com/linux/v5.4.200/source/arch/arm64/boot/install.sh" target="_blank" rel="noopener">install.sh</a></p>
+<figure class="highlight makefile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Arguments:</span></span><br><span class="line"><span class="comment">#   $1 - kernel version</span></span><br><span class="line"><span class="comment">#   $2 - kernel image file</span></span><br><span class="line"><span class="comment">#   $3 - kernel map file</span></span><br><span class="line"><span class="comment">#   $4 - default install path (blank if root directory)</span></span><br><span class="line"></span><br><span class="line">...</span><br><span class="line">if [ <span class="string">"$(basename $2)"</span> = <span class="string">"Image.gz"</span> ]; then</span><br><span class="line"><span class="comment"># Compressed install</span></span><br><span class="line">  echo <span class="string">"Installing compressed kernel"</span></span><br><span class="line">  base=vmlinuz</span><br><span class="line"><span class="keyword">else</span></span><br><span class="line"><span class="comment"># Normal install</span></span><br><span class="line">  echo <span class="string">"Installing normal kernel"</span></span><br><span class="line">  base=vmlinux</span><br><span class="line">fi</span><br><span class="line"></span><br><span class="line">if [ -f $4/$base-$1 ]; then</span><br><span class="line">  mv $4/$base-$1 $4/$base-$1.old</span><br><span class="line">fi</span><br><span class="line">cat $2 &gt; $4/$base-$1</span><br></pre></td></tr></table></figure>
+<p>用一张图总结如下：</p>
+<p><a href="https://imgse.com/i/x8FfYD" target="_blank" rel="noopener"><img src="https://s1.ax1x.com/2022/10/07/x8FfYD.png" alt="x8FfYD.png"></a></p>
 
       
     </div>
@@ -574,12 +555,12 @@
   <!-- JS库 sweetalert 可修改路径 -->
   <script src="https://cdn.bootcss.com/jquery/2.0.0/jquery.min.js"></script>
   <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
-  <p><span>本文标题:</span><a href="/2019/03/10/爬楼小车/">智能寻迹爬楼载重清洁装置</a></p>
+  <p><span>本文标题:</span><a href="/2022/09/12/bzImage/">kernel启动镜像不是vmlinux，而是它！</a></p>
   <p><span>文章作者:</span><a href="/" title="访问 孤岛violet 的个人博客">孤岛violet</a></p>
-  <p><span>发布时间:</span>2019年03月10日 - 22:09</p>
-  <p><span>最后更新:</span>2019年07月23日 - 21:06</p>
-  <p><span>原始链接:</span><a href="/2019/03/10/爬楼小车/" title="智能寻迹爬楼载重清洁装置">http://yoursite.com/2019/03/10/爬楼小车/</a>
-    <span class="copy-path" title="点击复制文章链接"><i class="fa fa-clipboard" data-clipboard-text="http://yoursite.com/2019/03/10/爬楼小车/" aria-label="复制成功！"></i></span>
+  <p><span>发布时间:</span>2022年09月12日 - 21:43</p>
+  <p><span>最后更新:</span>2022年10月07日 - 17:02</p>
+  <p><span>原始链接:</span><a href="/2022/09/12/bzImage/" title="kernel启动镜像不是vmlinux，而是它！">http://yoursite.com/2022/09/12/bzImage/</a>
+    <span class="copy-path" title="点击复制文章链接"><i class="fa fa-clipboard" data-clipboard-text="http://yoursite.com/2022/09/12/bzImage/" aria-label="复制成功！"></i></span>
   </p>
   <p><span>许可协议:</span><i class="fa fa-creative-commons"></i> <a rel="license" href="https://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank" title="Attribution-NonCommercial-NoDerivatives 4.0 International (CC BY-NC-ND 4.0)">署名-非商业性使用-禁止演绎 4.0 国际</a> 转载请保留原文链接及作者。</p>  
 </div>
@@ -614,11 +595,9 @@
       
         <div class="post-tags">
           
-            <a href="/tags/避障/" rel="tag"><i class="fa fa-tag"></i> 避障</a>
+            <a href="/tags/Linux内核/" rel="tag"><i class="fa fa-tag"></i> Linux内核</a>
           
-            <a href="/tags/超声波检测/" rel="tag"><i class="fa fa-tag"></i> 超声波检测</a>
-          
-            <a href="/tags/爬楼装置/" rel="tag"><i class="fa fa-tag"></i> 爬楼装置</a>
+            <a href="/tags/编译/" rel="tag"><i class="fa fa-tag"></i> 编译</a>
           
         </div>
       
@@ -631,8 +610,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2019/03/10/鱼丸机/" rel="next" title="小型鱼丸生产加工流水线设计">
-                <i class="fa fa-chevron-left"></i> 小型鱼丸生产加工流水线设计
+              <a href="/2022/09/12/compile-obj-file/" rel="next" title="Linux kernel中.o文件的编译过程">
+                <i class="fa fa-chevron-left"></i> Linux kernel中.o文件的编译过程
               </a>
             
           </div>
@@ -641,8 +620,8 @@
 
           <div class="post-nav-prev post-nav-item">
             
-              <a href="/2019/03/12/C-Standard-Library-architecure-sources1/" rel="prev" title="C++ Standard Library--architecure & sources1">
-                C++ Standard Library--architecure & sources1 <i class="fa fa-chevron-right"></i>
+              <a href="/2022/09/13/vmlinux/" rel="prev" title="vmlinux是如何被编译出来的？">
+                vmlinux是如何被编译出来的？ <i class="fa fa-chevron-right"></i>
               </a>
             
           </div>
@@ -688,17 +667,8 @@
       
 
       
-        <ul class="sidebar-nav motion-element">
-          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
-            文章目录
-          </li>
-          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
-            站点概览
-          </li>
-        </ul>
-      
 
-      <div class="site-overview-wrap sidebar-panel">
+      <div class="site-overview-wrap sidebar-panel sidebar-panel-active">
         <div class="site-overview">
           <div class="site-author motion-element" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
             
@@ -903,23 +873,6 @@
         </div>
       </div>
 <iframe frameborder="no" border="0" marginwidth="0" marginheight="0" width="330" height="86" src="//music.163.com/outchain/player?type=2&id=393685&auto=1&height=66"></iframe>
-      
-      <!--noindex-->
-        <div class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
-          <div class="post-toc">
-
-            
-            
-            
-            
-
-            
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#演示视频见B站"><span class="nav-number">1.</span> <span class="nav-text">演示视频见B站</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#技术领域"><span class="nav-number">2.</span> <span class="nav-text">技术领域</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#背景技术"><span class="nav-number">3.</span> <span class="nav-text">背景技术</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#发明内容"><span class="nav-number">4.</span> <span class="nav-text">发明内容</span></a></li></ol></div>
-            
-
-          </div>
-        </div>
-      <!--/noindex-->
       
 
       
