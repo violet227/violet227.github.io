@@ -1,0 +1,1288 @@
+<!DOCTYPE html>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+<html class="theme-next pisces use-motion" lang="zh-CN">
+<head><meta name="generator" content="Hexo 3.8.0">
+  <meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.6.2">
+
+<link rel="stylesheet" href="/css/main.css?v=6.7.0">
+
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=6.7.0">
+
+
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=6.7.0">
+
+
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=6.7.0">
+
+
+  <link rel="mask-icon" href="/images/logo.svg?v=6.7.0" color="#222">
+
+
+
+
+
+
+
+<script id="hexo.configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Pisces',
+    version: '6.7.0',
+    sidebar: {"position":"left","width":240,"display":"post","offset":12,"b2t":true,"scrollpercent":true,"onmobile":false},
+    fancybox: false,
+    fastclick: false,
+    lazyload: false,
+    tabs: true,
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    algolia: {
+      applicationID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    }
+  };
+</script>
+
+
+  
+
+
+
+
+  <meta name="description" content="日期 内核版本 架构     2022-10-09 Linux5.4.200 ARM64     前言 前不久项目上遇到了rootfs无法挂载的问题，就着这个问题顺便了解一下rootfs的挂载流程，总结于此分享给大家。 首先帮大家复习几个概念。    术语 解析     rootfs 根文件系统，对应/目录节点。分为虚拟rootfs和真实rootfs：虚拟rootfs由内核自己创建和加载，仅">
+<meta name="keywords" content="Linux内核,编译">
+<meta property="og:type" content="article">
+<meta property="og:title" content="rootfs是如何挂载的？">
+<meta property="og:url" content="http://yoursite.com/2022/10/09/ramdisk/index.html">
+<meta property="og:site_name" content="量子孤岛">
+<meta property="og:description" content="日期 内核版本 架构     2022-10-09 Linux5.4.200 ARM64     前言 前不久项目上遇到了rootfs无法挂载的问题，就着这个问题顺便了解一下rootfs的挂载流程，总结于此分享给大家。 首先帮大家复习几个概念。    术语 解析     rootfs 根文件系统，对应/目录节点。分为虚拟rootfs和真实rootfs：虚拟rootfs由内核自己创建和加载，仅">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="https://s1.ax1x.com/2022/10/09/xJly2n.png">
+<meta property="og:image" content="https://s1.ax1x.com/2022/10/09/xJ8KbV.png">
+<meta property="og:image" content="https://s1.ax1x.com/2022/10/09/xJl6vq.png">
+<meta property="og:updated_time" content="2022-10-09T04:13:39.558Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="rootfs是如何挂载的？">
+<meta name="twitter:description" content="日期 内核版本 架构     2022-10-09 Linux5.4.200 ARM64     前言 前不久项目上遇到了rootfs无法挂载的问题，就着这个问题顺便了解一下rootfs的挂载流程，总结于此分享给大家。 首先帮大家复习几个概念。    术语 解析     rootfs 根文件系统，对应/目录节点。分为虚拟rootfs和真实rootfs：虚拟rootfs由内核自己创建和加载，仅">
+<meta name="twitter:image" content="https://s1.ax1x.com/2022/10/09/xJly2n.png">
+
+
+
+  <link rel="alternate" href="/atom.xml" title="量子孤岛" type="application/atom+xml">
+
+
+
+
+  <link rel="canonical" href="http://yoursite.com/2022/10/09/ramdisk/">
+
+
+
+<script id="page.configurations">
+  CONFIG.page = {
+    sidebar: "",
+  };
+</script>
+
+  <title>rootfs是如何挂载的？ | 量子孤岛</title>
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .motion-element,
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-title { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+<body itemscope="" itemtype="http://schema.org/WebPage" lang="zh-CN">
+
+  
+  
+    
+  
+
+  <div class="container sidebar-position-left page-post-detail">
+    <div class="headband"></div>
+	
+	<a href="https://github.com/violet227" class="github-corner" aria-label="View source on GitHub"><svg width="80" height="80" viewbox="0 0 250 250" style="fill:#151513; color:#fff; position: absolute; top: 0; border: 0; right: 0;" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"/><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"/><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"/></svg></a><style>.github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@media (max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}}</style>
+	
+
+    <header id="header" class="header" itemscope="" itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-wrapper">
+  <div class="site-meta">
+    
+
+    <div class="custom-logo-site-title">
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">量子孤岛</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+    
+      
+        <p class="site-subtitle">王 韬</p>
+      
+    
+    
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  
+    <ul id="menu" class="menu">
+      
+        
+        
+        
+          
+          <li class="menu-item menu-item-home">
+
+    
+    
+    
+      
+    
+
+    
+      
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br>首页</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-about">
+
+    
+    
+    
+      
+    
+
+    
+      
+    
+
+    <a href="/about/" rel="section"><i class="menu-item-icon fa fa-fw fa-user"></i> <br>关于</a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-tags">
+
+    
+    
+    
+      
+    
+
+    
+      
+    
+
+    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br>标签<span class="badge">22</span></a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-categories">
+
+    
+    
+    
+      
+    
+
+    
+      
+    
+
+    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>分类<span class="badge">8</span></a>
+
+  </li>
+        
+        
+        
+          
+          <li class="menu-item menu-item-archives">
+
+    
+    
+    
+      
+    
+
+    
+      
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>归档<span class="badge">18</span></a>
+
+  </li>
+
+      
+      
+    </ul>
+  
+
+  
+
+  
+</nav>
+
+
+
+  
+
+
+
+</div>
+    </header>
+
+    
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+          
+            
+
+          
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+    
+
+  
+
+  
+  
+  
+
+  
+
+  <article class="post post-type-normal" itemscope="" itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2022/10/09/ramdisk/">
+
+    <span hidden itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="孤岛violet">
+      <meta itemprop="description" content="游戏永远没有结束...">
+      <meta itemprop="image" content="/images/face.jpg">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope="" itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="量子孤岛">
+    </span>
+
+    
+      <header class="post-header">
+
+        
+        
+          <h1 class="post-title" itemprop="name headline">rootfs是如何挂载的？
+
+              
+            
+          </h1>
+        
+
+        <div class="post-meta">
+          <span class="post-time">
+
+            
+            
+            
+
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">发表于</span>
+              
+
+              
+                
+              
+
+              <time title="创建时间：2022-10-09 18:00:00 / 修改时间：12:13:39" itemprop="dateCreated datePublished" datetime="2022-10-09T18:00:00+08:00">2022-10-09</time>
+            
+
+            
+              
+
+              
+            
+          </span>
+
+          
+            <span class="post-category">
+            
+              <span class="post-meta-divider">|</span>
+            
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              
+                <span class="post-meta-item-text">分类于</span>
+              
+              
+                <span itemprop="about" itemscope="" itemtype="http://schema.org/Thing"><a href="/categories/Linux内核/" itemprop="url" rel="index"><span itemprop="name">Linux内核</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+            
+            
+          
+
+          
+          
+
+          
+            <span class="post-meta-divider">|</span>
+            <span class="post-meta-item-icon">
+            <i class="fa fa-eye"></i>
+             阅读次数： 
+            <span class="busuanzi-value" id="busuanzi_value_page_pv"></span>
+            </span>
+          
+
+          
+            <div class="post-symbolscount">
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-file-word-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">本文字数：</span>
+                
+                <span title="本文字数">5.5k</span>
+              
+
+              
+                <span class="post-meta-divider">|</span>
+              
+
+              
+                <span class="post-meta-item-icon">
+                  <i class="fa fa-clock-o"></i>
+                </span>
+                
+                  <span class="post-meta-item-text">阅读时长 &asymp;</span>
+                
+                <span title="阅读时长">9 分钟</span>
+              
+            </div>
+          
+
+          
+
+        </div>
+      </header>
+    
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+      
+
+      
+        <table>
+<thead>
+<tr>
+<th style="text-align:left">日期</th>
+<th style="text-align:left">内核版本</th>
+<th style="text-align:left">架构</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">2022-10-09</td>
+<td style="text-align:left">Linux5.4.200</td>
+<td style="text-align:left">ARM64</td>
+</tr>
+</tbody>
+</table>
+<h2 id="前言"><a class="markdownIt-Anchor" href="#前言"></a> 前言</h2>
+<p>前不久项目上遇到了<code>rootfs</code>无法挂载的问题，就着这个问题顺便了解一下<code>rootfs</code>的挂载流程，总结于此分享给大家。</p>
+<p>首先帮大家复习几个概念。</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">术语</th>
+<th style="text-align:left">解析</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left"><code>rootfs</code></td>
+<td style="text-align:left">根文件系统，对应/目录节点。分为<code>虚拟rootfs</code>和<code>真实rootfs</code>：<br><code>虚拟rootfs</code>由内核自己创建和加载，仅仅存在于内存之中，其文件系统是<code>tmpfs</code>类型或者<code>ramfs</code>类型<br><code>真实rootfs</code>则是指根文件系统存在于存储设备上，内核在启动过程中会在虚拟rootfs上挂载这个存储设备，然后将/目录节点切换到这个存储设备上，这样存储设备上的文件系统就会被作为根文件系统使用</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>ramdisk</code></td>
+<td style="text-align:left">将系统一部分内存区域实现为<code>/dev/ram</code>，把<code>/dev/ram</code>作为作为一个存储设备，最终将根目录切换到<code>/dev/ram</code>的挂载，实现将<code>/dev/ram</code>作为根文件系统的目的。<br>使用<code>ext2</code>格式的文件系统</td>
+</tr>
+<tr>
+<td style="text-align:left"><code>initramfs</code></td>
+<td style="text-align:left">kernel 2.5中引入的技术，在内核镜像中附加一个<code>cpio</code>包，这个<code>cpio</code>包中包含了一个小型的文件系统，当内核启动时，内核将这个 <code>cpio</code>包解开，并且将其中包含的文件系统释放到<code>rootfs</code>中，内核中的一部分初始化代码会放到这个文件系统中，作为用户层进程来执行。</td>
+</tr>
+</tbody>
+</table>
+<h2 id="调用关系链"><a class="markdownIt-Anchor" href="#调用关系链"></a> 调用关系链</h2>
+<p>下面总结了一下<code>rootfs</code>挂载的调用过程：</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">start_kernel</span><br><span class="line">	|-&gt;vfs_caches_init</span><br><span class="line">	|	|-&gt;mnt_init</span><br><span class="line">	| 		|-&gt;sysfs_init</span><br><span class="line">	| 		|-&gt;init_rootfs</span><br><span class="line">	| 		|-&gt;init_mount_tree</span><br><span class="line">	| 		</span><br><span class="line">	|-&gt;rest_init</span><br><span class="line">	|	|-&gt;kernel_init</span><br><span class="line">	|		|-&gt;kernel_init_freeable</span><br><span class="line">	|			|-&gt;do_basic_setup</span><br><span class="line">    |            	|-&gt;do_initcalls</span><br><span class="line">    |            		|-&gt;do_initcall_level</span><br><span class="line">    |            			|-&gt;do_one_initcall</span><br><span class="line">    |            				|-&gt;rootfs_initcall(populate_rootfs);</span><br><span class="line">    |-&gt;init</span><br></pre></td></tr></table></figure>
+<p>在挂载<code>rootfs</code>前会先挂载<code>sysfs</code>，确保<code>sysfs</code>能够完整的记录下设备驱动模型。</p>
+<p><code>sysfs_init()</code>完成注册和挂载<code>sysfs</code>文件系统的功能；<code>init_rootfs()</code>负责注册<code>rootfs</code>，<code>init_mount_tree()</code>负责挂载<code>rootfs</code>，并将<code>init_task</code>的命名空间与之联系起来。</p>
+<p>所以在了解<code>rootfs</code>的挂载之前，我们先学习一下Linux文件系统初始化以及<code>sysfs</code>如何挂载。</p>
+<h2 id="linux文件系统初始化"><a class="markdownIt-Anchor" href="#linux文件系统初始化"></a> Linux文件系统初始化</h2>
+<p>展开<code>vfs_caches_init</code>来看。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">void</span> __<span class="function">init <span class="title">vfs_caches_init</span><span class="params">(<span class="keyword">void</span>)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	names_cachep = kmem_cache_create_usercopy(<span class="string">"names_cache"</span>, PATH_MAX, <span class="number">0</span>,</span><br><span class="line">			SLAB_HWCACHE_ALIGN|SLAB_PANIC, <span class="number">0</span>, PATH_MAX, <span class="literal">NULL</span>);</span><br><span class="line"></span><br><span class="line">	dcache_init();</span><br><span class="line">	inode_init();</span><br><span class="line">	files_init();</span><br><span class="line">	files_maxfiles_init();</span><br><span class="line">	mnt_init();</span><br><span class="line">	bdev_cache_init();</span><br><span class="line">	chrdev_init();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<ul>
+<li>
+<p><code>vfs_caches_init()</code>首先建立并初始化:</p>
+<ul>
+<li>目录hash表 - <code>dentry_hashtable</code></li>
+<li>索引节点hash表 - <code>inode_hashtable</code></li>
+<li>注：Linux使用哈希表存储目录和索引节点，以提高目录和索引节点的查找效率</li>
+</ul>
+</li>
+<li>
+<p>设置内核可以打开的最大文件数</p>
+</li>
+<li>
+<p>通过<code>mnt_init</code>完成<code>sysfs</code>和<code>rootfs</code>文件系统的注册和挂载</p>
+</li>
+</ul>
+<h2 id="sysfs挂载流程"><a class="markdownIt-Anchor" href="#sysfs挂载流程"></a> <code>sysfs</code>挂载流程</h2>
+<p><code>sysfs</code>负责记录Linux设备驱动模型.</p>
+<p><a href="https://elixir.bootlin.com/linux/v5.4.200/source/fs/namespace.c#L3766" target="_blank" rel="noopener">https://elixir.bootlin.com/linux/v5.4.200/source/fs/namespace.c#L3766</a></p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">void</span> __<span class="function">init <span class="title">mnt_init</span><span class="params">(<span class="keyword">void</span>)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="keyword">int</span> err;</span><br><span class="line"></span><br><span class="line">	mnt_cache = kmem_cache_create(<span class="string">"mnt_cache"</span>, <span class="keyword">sizeof</span>(struct mount),</span><br><span class="line">			<span class="number">0</span>, SLAB_HWCACHE_ALIGN | SLAB_PANIC, <span class="literal">NULL</span>);</span><br><span class="line"></span><br><span class="line">	mount_hashtable = alloc_large_system_hash(<span class="string">"Mount-cache"</span>,</span><br><span class="line">				<span class="keyword">sizeof</span>(struct hlist_head),</span><br><span class="line">				mhash_entries, <span class="number">19</span>,</span><br><span class="line">				HASH_ZERO,</span><br><span class="line">				&amp;m_hash_shift, &amp;m_hash_mask, <span class="number">0</span>, <span class="number">0</span>);</span><br><span class="line">	mountpoint_hashtable = alloc_large_system_hash(<span class="string">"Mountpoint-cache"</span>,</span><br><span class="line">				<span class="keyword">sizeof</span>(struct hlist_head),</span><br><span class="line">				mphash_entries, <span class="number">19</span>,</span><br><span class="line">				HASH_ZERO,</span><br><span class="line">				&amp;mp_hash_shift, &amp;mp_hash_mask, <span class="number">0</span>, <span class="number">0</span>);</span><br><span class="line"></span><br><span class="line">	<span class="keyword">if</span> (!mount_hashtable || !mountpoint_hashtable)</span><br><span class="line">		panic(<span class="string">"Failed to allocate mount hash table\n"</span>);</span><br><span class="line"></span><br><span class="line">	kernfs_init();</span><br><span class="line"></span><br><span class="line">	err = sysfs_init(); <span class="comment">// 注册并挂载sysfs文件系统</span></span><br><span class="line">	<span class="keyword">if</span> (err)</span><br><span class="line">		printk(KERN_WARNING <span class="string">"%s: sysfs_init error: %d\n"</span>,</span><br><span class="line">			__func__, err);</span><br><span class="line">	fs_kobj = kobject_create_and_add(<span class="string">"fs"</span>, <span class="literal">NULL</span>); <span class="comment">// 创建fs目录</span></span><br><span class="line">	<span class="keyword">if</span> (!fs_kobj)</span><br><span class="line">		printk(KERN_WARNING <span class="string">"%s: kobj create error\n"</span>, __func__);</span><br><span class="line">	shmem_init();</span><br><span class="line">	init_rootfs();</span><br><span class="line">	init_mount_tree();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><code>mnt_init()</code>调用<code>sysfs_init()</code>注册并挂载<code>sysfs</code>文件系统，然后调用<code>kobject_create_and_add()</code>创建<code>fs</code>目录。</p>
+<p><a href="https://elixir.bootlin.com/linux/v5.4.200/source/fs/sysfs/mount.c#L97" target="_blank" rel="noopener">https://elixir.bootlin.com/linux/v5.4.200/source/fs/sysfs/mount.c#L97</a></p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> __<span class="function">init <span class="title">sysfs_init</span><span class="params">(<span class="keyword">void</span>)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="keyword">int</span> err;</span><br><span class="line"></span><br><span class="line">	sysfs_root = kernfs_create_root(<span class="literal">NULL</span>, KERNFS_ROOT_EXTRA_OPEN_PERM_CHECK,</span><br><span class="line">					<span class="literal">NULL</span>);</span><br><span class="line">	<span class="keyword">if</span> (IS_ERR(sysfs_root))</span><br><span class="line">		<span class="keyword">return</span> PTR_ERR(sysfs_root);</span><br><span class="line"></span><br><span class="line">	sysfs_root_kn = sysfs_root-&gt;kn;</span><br><span class="line"></span><br><span class="line">	err = register_filesystem(&amp;sysfs_fs_type);</span><br><span class="line">	<span class="keyword">if</span> (err) &#123;</span><br><span class="line">		kernfs_destroy_root(sysfs_root);</span><br><span class="line">		<span class="keyword">return</span> err;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><strong>第一步</strong>：创建根节点<code>sysfs</code>根节点。</p>
+<p><strong>第二步</strong>：building block of kernfs hierarchy，每一个节点都代表一个kernfs_node.</p>
+<p><strong>第三步</strong>：<code>sysfs_init()</code>调用<code>register_filesystem()</code>注册文件系统类型<code>sysfs_fs_type</code>，并加入到全局单链表<code>file_systems</code>中。</p>
+<p><code>sysfs_fs_type</code>定义如下，<code>.mount</code>成员函数负责超级块、根目录和索引节点的创建和初始化工作.</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">static</span> <span class="class"><span class="keyword">struct</span> <span class="title">file_system_type</span> <span class="title">sysfs_fs_type</span> = &#123;</span></span><br><span class="line">	.name			= <span class="string">"sysfs"</span>,</span><br><span class="line">	.init_fs_context	= sysfs_init_fs_context,</span><br><span class="line">	.kill_sb		= sysfs_kill_sb,</span><br><span class="line">	.fs_flags		= FS_USERNS_MOUNT,</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p><a href="https://imgse.com/i/xJly2n" target="_blank" rel="noopener"><img src="https://s1.ax1x.com/2022/10/09/xJly2n.png" alt="xJly2n.png"></a></p>
+<p>通过以上步骤，<code>sysfs</code>文件系统在<code>VFS</code>中的视图如下：</p>
+<p>挂载点指向超级块和根目录；超级块处在super_blocks单链表中，并且链接起所有属于该文件系统的索引节点；根目录’/'和目录&quot;fs&quot;指向各自的索引节点；为了提高查找效率，索引节点保存在hash表中。</p>
+<p><a href="https://imgse.com/i/xJ8KbV" target="_blank" rel="noopener"><img src="https://s1.ax1x.com/2022/10/09/xJ8KbV.png" alt="xJ8KbV.png"></a></p>
+<h2 id="rootfs挂载过程"><a class="markdownIt-Anchor" href="#rootfs挂载过程"></a> <code>rootfs</code>挂载过程</h2>
+<p><code>mnt_init()</code>调用<code>init_rootfs()</code>注册文件系统类型<code>rootfs_fs_type</code>，并加入到全局单链表<code>file_systems</code>中。</p>
+<p><code>rootfs_fs_typ</code>e定义如下，mount成员函数负责超级块、根目录和索引节点的建立和初始化工作。</p>
+<figure class="highlight nix"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">struct file_system_type <span class="attr">rootfs_fs_type</span> = &#123;</span><br><span class="line">	.<span class="attr">name</span>		= <span class="string">"rootfs"</span>,</span><br><span class="line">	.<span class="attr">init_fs_context</span> = rootfs_init_fs_context,</span><br><span class="line">	.<span class="attr">kill_sb</span>	= kill_litter_super,</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<ol>
+<li>
+<p><code>init_mount_tree()</code>调用<code>vfs_kern_mount()</code>挂载<code>rootfs</code>文件系统.</p>
+</li>
+<li>
+<p><code>init_mount_tree()</code>创建命名空间，并设置该命名空间的挂载点为<code>rootfs</code>的挂载点，同时将<code>rootfs</code>的挂载点链接到该命名空间的双向链表中。</p>
+</li>
+<li>
+<p><code>init_mount_tree()</code>设置<code>init_task</code>的命名空间，同时调用<code>set_fs_pwd()</code>和<code>set_fs_root()</code>设置<code>init_task</code>任务的当前目录和根目录为<code>rootfs</code>的根目录’/’</p>
+</li>
+</ol>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">static</span> <span class="keyword">void</span> __<span class="function">init <span class="title">init_mount_tree</span><span class="params">(<span class="keyword">void</span>)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">vfsmount</span> *<span class="title">mnt</span>;</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">mount</span> *<span class="title">m</span>;</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">mnt_namespace</span> *<span class="title">ns</span>;</span></span><br><span class="line">	<span class="class"><span class="keyword">struct</span> <span class="title">path</span> <span class="title">root</span>;</span></span><br><span class="line"></span><br><span class="line">	mnt = vfs_kern_mount(&amp;rootfs_fs_type, <span class="number">0</span>, <span class="string">"rootfs"</span>, <span class="literal">NULL</span>);</span><br><span class="line">	<span class="keyword">if</span> (IS_ERR(mnt))</span><br><span class="line">		panic(<span class="string">"Can't create rootfs"</span>);</span><br><span class="line"></span><br><span class="line">	ns = alloc_mnt_ns(&amp;init_user_ns, <span class="literal">false</span>);<span class="comment">// 创建namespace</span></span><br><span class="line">	<span class="keyword">if</span> (IS_ERR(ns))</span><br><span class="line">		panic(<span class="string">"Can't allocate initial namespace"</span>);</span><br><span class="line">	m = real_mount(mnt);</span><br><span class="line">	m-&gt;mnt_ns = ns;</span><br><span class="line">	ns-&gt;root = m;</span><br><span class="line">	ns-&gt;mounts = <span class="number">1</span>;</span><br><span class="line">	list_add(&amp;m-&gt;mnt_list, &amp;ns-&gt;<span class="built_in">list</span>);</span><br><span class="line">	init_task.nsproxy-&gt;mnt_ns = ns;</span><br><span class="line">	get_mnt_ns(ns);</span><br><span class="line"></span><br><span class="line">	root.mnt = mnt;</span><br><span class="line">	root.dentry = mnt-&gt;mnt_root;</span><br><span class="line">	mnt-&gt;mnt_flags |= MNT_LOCKED;</span><br><span class="line"></span><br><span class="line">	set_fs_pwd(current-&gt;fs, &amp;root);</span><br><span class="line">	set_fs_root(current-&gt;fs, &amp;root);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>通过以上分析，我们发现<code>sysfs</code>和<code>rootfs</code>的区别在于：虽然系统同时挂载了<code>sysfs</code>和<code>rootfs</code>文件系统，但是只有<code>rootfs</code>处于<code>init_task</code>进程的命名空间内，也就是说系统启动和初始化阶段使用的是<code>rootfs</code>文件系统。</p>
+<h2 id="总结"><a class="markdownIt-Anchor" href="#总结"></a> 总结</h2>
+<p><code>sysfs</code>和<code>rootfs</code>在<code>VFS</code>中的视图如下：</p>
+<p><a href="https://imgse.com/i/xJl6vq" target="_blank" rel="noopener"><img src="https://s1.ax1x.com/2022/10/09/xJl6vq.png" alt="xJl6vq.png"></a></p>
+<ul>
+<li>Linux文件系统在初始化时，同时挂载了<code>sysfs</code>和<code>rootfs</code>文件系统</li>
+<li>只有<code>rootfs</code>处于进程的命名空间中，且进程的root目录和pwd目录都指向<code>rootfs</code>的根目录</li>
+<li>Linux的<code>VFS</code>已经准备好了根目录，用户可以使用系统调用对<code>VFS</code>树进行扩展</li>
+</ul>
+
+      
+    </div>
+
+    
+
+    
+    
+    
+	<div>
+  
+    <div>
+    
+        <div style="text-align:center;color: #ccc;font-size:14px;">-------------本文结束<i class="fa fa-paw"></i>感谢您的阅读-------------</div>
+    
+</div>
+  
+	</div>
+	
+	<div>
+      
+        
+<div class="my_post_copyright">
+  <script src="//cdn.bootcss.com/clipboard.js/1.5.10/clipboard.min.js"></script>
+  
+  <!-- JS库 sweetalert 可修改路径 -->
+  <script src="https://cdn.bootcss.com/jquery/2.0.0/jquery.min.js"></script>
+  <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+  <p><span>本文标题:</span><a href="/2022/10/09/ramdisk/">rootfs是如何挂载的？</a></p>
+  <p><span>文章作者:</span><a href="/" title="访问 孤岛violet 的个人博客">孤岛violet</a></p>
+  <p><span>发布时间:</span>2022年10月09日 - 18:00</p>
+  <p><span>最后更新:</span>2022年10月09日 - 12:13</p>
+  <p><span>原始链接:</span><a href="/2022/10/09/ramdisk/" title="rootfs是如何挂载的？">http://yoursite.com/2022/10/09/ramdisk/</a>
+    <span class="copy-path" title="点击复制文章链接"><i class="fa fa-clipboard" data-clipboard-text="http://yoursite.com/2022/10/09/ramdisk/" aria-label="复制成功！"></i></span>
+  </p>
+  <p><span>许可协议:</span><i class="fa fa-creative-commons"></i> <a rel="license" href="https://creativecommons.org/licenses/by-nc-nd/4.0/" target="_blank" title="Attribution-NonCommercial-NoDerivatives 4.0 International (CC BY-NC-ND 4.0)">署名-非商业性使用-禁止演绎 4.0 国际</a> 转载请保留原文链接及作者。</p>  
+</div>
+<script> 
+    var clipboard = new Clipboard('.fa-clipboard');
+      $(".fa-clipboard").click(function(){
+      clipboard.on('success', function(){
+        swal({   
+          title: "",   
+          text: '复制成功',
+          icon: "success", 
+          showConfirmButton: true
+          });
+        });
+    });  
+</script>
+
+
+      
+	</div>
+	
+    
+
+    
+      
+    
+    
+
+    
+
+    <footer class="post-footer">
+      
+        <div class="post-tags">
+          
+            <a href="/tags/Linux内核/" rel="tag"><i class="fa fa-tag"></i> Linux内核</a>
+          
+            <a href="/tags/编译/" rel="tag"><i class="fa fa-tag"></i> 编译</a>
+          
+        </div>
+      
+
+      
+      
+      
+
+      
+        <div class="post-nav">
+          <div class="post-nav-next post-nav-item">
+            
+              <a href="/2022/10/08/bzImage/" rel="next" title="kernel启动镜像不是vmlinux，而是它！">
+                <i class="fa fa-chevron-left"></i> kernel启动镜像不是vmlinux，而是它！
+              </a>
+            
+          </div>
+
+          <span class="post-nav-divider"></span>
+
+          <div class="post-nav-prev post-nav-item">
+            
+          </div>
+        </div>
+      
+
+      
+      
+    </footer>
+  </div>
+  
+  
+  
+  </article>
+
+
+  </div>
+
+
+          </div>
+          
+
+  
+
+
+
+        </div>
+        
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside id="sidebar" class="sidebar">
+    
+    <div class="sidebar-inner">
+
+      
+
+      
+        <ul class="sidebar-nav motion-element">
+          <li class="sidebar-nav-toc sidebar-nav-active" data-target="post-toc-wrap">
+            文章目录
+          </li>
+          <li class="sidebar-nav-overview" data-target="site-overview-wrap">
+            站点概览
+          </li>
+        </ul>
+      
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-overview">
+          <div class="site-author motion-element" itemprop="author" itemscope="" itemtype="http://schema.org/Person">
+            
+              <img class="site-author-image" itemprop="image" src="/images/face.jpg" alt="孤岛violet">
+            
+              <p class="site-author-name" itemprop="name">孤岛violet</p>
+              <p class="site-description motion-element" itemprop="description">游戏永远没有结束...</p>
+          </div>
+ 
+          
+            <nav class="site-state motion-element">
+              
+                <div class="site-state-item site-state-posts">
+                
+                  <a href="/archives/">
+                
+                    <span class="site-state-item-count">18</span>
+                    <span class="site-state-item-name">日志</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-categories">
+                  <a href="/categories/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">8</span>
+                    <span class="site-state-item-name">分类</span>
+                  </a>
+                </div>
+              
+
+              
+                
+                
+                <div class="site-state-item site-state-tags">
+                  <a href="/tags/index.html">
+                    
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                      
+                    
+                    <span class="site-state-item-count">22</span>
+                    <span class="site-state-item-name">标签</span>
+                  </a>
+                </div>
+              
+            </nav>
+          
+
+          
+            <div class="feed-link motion-element">
+              <a href="/atom.xml" rel="alternate">
+                <i class="fa fa-rss"></i>
+                RSS
+              </a>
+            </div>
+          
+
+          
+            <div class="links-of-author motion-element">
+              
+                <span class="links-of-author-item">
+                  
+                  
+                    
+                  
+                  
+                    
+                  
+                  <a href="https://github.com/violet227" title="GitHub &rarr; https://github.com/violet227" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+                </span>
+              
+                <span class="links-of-author-item">
+                  
+                  
+                    
+                  
+                  
+                    
+                  
+                  <a href="https://stackoverflow.com/users/story/10245166" title="StackOverflow &rarr; https://stackoverflow.com/users/story/10245166" rel="noopener" target="_blank"><i class="fa fa-fw fa-stack-overflow"></i>StackOverflow</a>
+                </span>
+              
+                <span class="links-of-author-item">
+                  
+                  
+                    
+                  
+                  
+                    
+                  
+                  <a href="https://www.zhihu.com/people/gu-dao-violet" title="知乎 &rarr; https://www.zhihu.com/people/gu-dao-violet" rel="noopener" target="_blank"><i class="fa fa-fw fa-paper-plane"></i>知乎</a>
+                </span>
+              
+                <span class="links-of-author-item">
+                  
+                  
+                    
+                  
+                  
+                    
+                  
+                  <a href="https://blog.csdn.net/fly_wt" title="CSDN &rarr; https://blog.csdn.net/fly_wt" rel="noopener" target="_blank"><i class="fa fa-fw fa-user-secret"></i>CSDN</a>
+                </span>
+              
+                <span class="links-of-author-item">
+                  
+                  
+                    
+                  
+                  
+                    
+                  
+                  <a href="https://music.163.com/#/user/home?id=87858626" title="网易云音乐 &rarr; https://music.163.com/#/user/home?id=87858626" rel="noopener" target="_blank"><i class="fa fa-fw fa-headphones"></i>网易云音乐</a>
+                </span>
+              
+                <span class="links-of-author-item">
+                  
+                  
+                    
+                  
+                  
+                    
+                  
+                  <a href="https://kg.qq.com/node/personal?uid=639e9e85252d378f34" title="全民k歌 &rarr; https://kg.qq.com/node/personal?uid=639e9e85252d378f34" rel="noopener" target="_blank"><i class="fa fa-fw fa-microphone"></i>全民k歌</a>
+                </span>
+              
+            </div>
+          
+
+          
+
+          
+          
+
+          
+            
+          
+          
+
+        </div>
+      </div>
+<iframe frameborder="no" border="0" marginwidth="0" marginheight="0" width="330" height="86" src="//music.163.com/outchain/player?type=2&id=393685&auto=1&height=66"></iframe>
+      
+      <!--noindex-->
+        <div class="post-toc-wrap motion-element sidebar-panel sidebar-panel-active">
+          <div class="post-toc">
+
+            
+            
+            
+            
+
+            
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text"> 前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#调用关系链"><span class="nav-number">2.</span> <span class="nav-text"> 调用关系链</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#linux文件系统初始化"><span class="nav-number">3.</span> <span class="nav-text"> Linux文件系统初始化</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#sysfs挂载流程"><span class="nav-number">4.</span> <span class="nav-text"> sysfs挂载流程</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#rootfs挂载过程"><span class="nav-number">5.</span> <span class="nav-text"> rootfs挂载过程</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#总结"><span class="nav-number">6.</span> <span class="nav-text"> 总结</span></a></li></ol></div>
+            
+
+          </div>
+        </div>
+      <!--/noindex-->
+      
+
+      
+        <div class="back-to-top">
+          <i class="fa fa-arrow-up"></i>
+          
+            <span id="scrollpercent"><span>0</span>%</span>
+          
+        </div>
+      
+
+    </div>
+  </aside>
+
+
+        
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <script async src="https://dn-lbstatics.qbox.me/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+<div class="copyright">&copy; <span itemprop="copyrightYear">2022</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">孤岛violet</span>
+
+  
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-area-chart"></i>
+    </span>
+    
+      <span class="post-meta-item-text">站点总字数：</span>
+    
+    <span title="站点总字数">97k</span>
+  
+<div class="powered-by">
+<i class="fa fa-user-md"></i><span id="busuanzi_container_site_uv">
+  本站访客数:<span id="busuanzi_value_site_uv"></span>
+</span>
+</div>
+  
+    <span class="post-meta-divider">|</span>
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    
+      <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
+    
+    <span title="站点阅读时长">2:42</span>
+  
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<span id="sitetime"></span>
+<script language="javascript">
+  function siteTime(){
+    window.setTimeout("siteTime()", 1000);
+    var seconds = 1000;
+    var minutes = seconds * 60;
+    var hours = minutes * 60;
+    var days = hours * 24;
+    var years = days * 365;
+    var today = new Date();
+    var todayYear = today.getFullYear();
+    var todayMonth = today.getMonth()+1;
+    var todayDate = today.getDate();
+    var todayHour = today.getHours();
+    var todayMinute = today.getMinutes();
+    var todaySecond = today.getSeconds();
+    var t1 = Date.UTC(2019,01,27,12,00,00); // 设置建立网站的时间
+    var t2 = Date.UTC(todayYear,todayMonth,todayDate,todayHour,todayMinute,todaySecond);
+    var diff = t2-t1;
+    var diffYears = Math.floor(diff/years);
+    var diffDays = Math.floor((diff/days)-diffYears*365);
+    var diffHours = Math.floor((diff-(diffYears*365+diffDays)*days)/hours);
+    var diffMinutes = Math.floor((diff-(diffYears*365+diffDays)*days-diffHours*hours)/minutes);
+    var diffSeconds = Math.floor((diff-(diffYears*365+diffDays)*days-diffHours*hours-diffMinutes*minutes)/seconds);
+    document.getElementById("sitetime").innerHTML=" 已运行"+diffYears+" 年 "diffDays+" 天 "+diffHours+" 小时 "+diffMinutes+" 分钟 "+diffSeconds+" 秒";
+  }
+  siteTime();
+</script>
+
+        
+<div class="busuanzi-count">
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+  
+    <span class="post-meta-item-icon">
+      <i class="fa fa-user"></i>
+    </span>
+    <span class="site-uv" title="总访客量">
+      <span class="busuanzi-value" id="busuanzi_value_site_uv"></span>
+    </span>
+  
+
+  
+    <span class="post-meta-divider">|</span>
+  
+
+  
+    <span class="post-meta-item-icon">
+      <i class="fa fa-eye"></i>
+    </span>
+    <span class="site-pv" title="总访问量">
+      <span class="busuanzi-value" id="busuanzi_value_site_pv"></span>
+    </span>
+  
+</div>
+
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+
+    
+
+    
+
+    
+
+    
+  </div>
+
+  
+
+<script>
+  if (Object.prototype.toString.call(window.Promise) !== '[object Function]') {
+    window.Promise = null;
+  }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+    
+    
+  
+  <script color="0,0,255" opacity="0.5" zindex="-1" count="99" src="/lib/canvas-nest/canvas-nest.min.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+  <script src="/lib/jquery/index.js?v=2.1.3"></script>
+
+  
+  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+
+  
+  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+
+
+  
+
+
+  <script src="/js/src/utils.js?v=6.7.0"></script>
+
+  <script src="/js/src/motion.js?v=6.7.0"></script>
+
+
+
+  
+  
+
+
+  <script src="/js/src/affix.js?v=6.7.0"></script>
+
+  <script src="/js/src/schemes/pisces.js?v=6.7.0"></script>
+
+
+
+  
+  <script src="/js/src/scrollspy.js?v=6.7.0"></script>
+<script src="/js/src/post-details.js?v=6.7.0"></script>
+
+
+
+  
+
+
+  <script src="/js/src/bootstrap.js?v=6.7.0"></script>
+
+
+
+  
+
+
+  
+
+
+  
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+  
+
+  
+  
+
+  
+    
+      <script type="text/x-mathjax-config">
+  
+
+  MathJax.Hub.Config({
+    tex2jax: {
+      inlineMath: [ ['$','$'], ["\\(","\\)"] ],
+      processEscapes: true,
+      skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code']
+    },
+    TeX: {
+      
+      equationNumbers: {
+        autoNumber: "AMS"
+      }
+    }
+  });
+</script>
+
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Queue(function() {
+    var all = MathJax.Hub.getAllJax(), i;
+      for (i = 0; i < all.length; i += 1) {
+        all[i].SourceElement().parentNode.className += ' has-jax';
+      }
+  });
+</script>
+<script src="//cdn.jsdelivr.net/npm/mathjax@2.7.1/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+<style>
+.MathJax_Display {
+  overflow: auto hidden;
+}
+</style>
+
+    
+  
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  undefined
+  
+<script type="text/javascript" src="//cdn.bootcss.com/canvas-nest.js/1.0.0/canvas-nest.min.js"></script>
+
+<script src="/live2dw/lib/L2Dwidget.min.js?0c58a1486de42ac6cc1c59c7d98ae887"></script><script>L2Dwidget.init({"model":{"jsonPath":"/live2dw/assets/hijiki.model.json"},"display":{"position":"right","width":100,"height":200,"bottom":-30},"mobile":{"show":true},"log":false,"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/","tagMode":false});</script></body>
+</html>
+<script type="text/javascript" src="/js/src/clicklove.js"></script>

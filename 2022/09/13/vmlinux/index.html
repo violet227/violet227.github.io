@@ -96,19 +96,19 @@
 
 
 
-  <meta name="description" content="前言如何编译Linux内核源码？| 量子孤岛一文中提到了，vmlinux是原始的，未经压缩的内核可执行文件，即kernel编出来的原始产物。 本文的主题只有一个：vmlinux到底是怎么生成的？     日期 内核版本 架构     2022-9-14 Linux5.4.200 ARM64     按图索骥-内核子系统编译kernel中编译的起点是根目录下的Makefile。 https://el">
+  <meta name="description" content="前言 如何编译Linux内核源码？| 量子孤岛一文中提到了，vmlinux是原始的，未经压缩的内核可执行文件，即kernel编出来的原始产物。 本文的主题只有一个：vmlinux到底是怎么生成的？    日期 内核版本 架构     2022-9-14 Linux5.4.200 ARM64     按图索骥-内核子系统编译 kernel中编译的起点是根目录下的Makefile。 https://">
 <meta name="keywords" content="Linux内核,编译">
 <meta property="og:type" content="article">
 <meta property="og:title" content="vmlinux是如何被编译出来的？">
 <meta property="og:url" content="http://yoursite.com/2022/09/13/vmlinux/index.html">
 <meta property="og:site_name" content="量子孤岛">
-<meta property="og:description" content="前言如何编译Linux内核源码？| 量子孤岛一文中提到了，vmlinux是原始的，未经压缩的内核可执行文件，即kernel编出来的原始产物。 本文的主题只有一个：vmlinux到底是怎么生成的？     日期 内核版本 架构     2022-9-14 Linux5.4.200 ARM64     按图索骥-内核子系统编译kernel中编译的起点是根目录下的Makefile。 https://el">
+<meta property="og:description" content="前言 如何编译Linux内核源码？| 量子孤岛一文中提到了，vmlinux是原始的，未经压缩的内核可执行文件，即kernel编出来的原始产物。 本文的主题只有一个：vmlinux到底是怎么生成的？    日期 内核版本 架构     2022-9-14 Linux5.4.200 ARM64     按图索骥-内核子系统编译 kernel中编译的起点是根目录下的Makefile。 https://">
 <meta property="og:locale" content="zh-CN">
 <meta property="og:image" content="https://s1.ax1x.com/2022/10/06/x3SX59.png">
 <meta property="og:updated_time" content="2022-10-06T14:37:27.580Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="vmlinux是如何被编译出来的？">
-<meta name="twitter:description" content="前言如何编译Linux内核源码？| 量子孤岛一文中提到了，vmlinux是原始的，未经压缩的内核可执行文件，即kernel编出来的原始产物。 本文的主题只有一个：vmlinux到底是怎么生成的？     日期 内核版本 架构     2022-9-14 Linux5.4.200 ARM64     按图索骥-内核子系统编译kernel中编译的起点是根目录下的Makefile。 https://el">
+<meta name="twitter:description" content="前言 如何编译Linux内核源码？| 量子孤岛一文中提到了，vmlinux是原始的，未经压缩的内核可执行文件，即kernel编出来的原始产物。 本文的主题只有一个：vmlinux到底是怎么生成的？    日期 内核版本 架构     2022-9-14 Linux5.4.200 ARM64     按图索骥-内核子系统编译 kernel中编译的起点是根目录下的Makefile。 https://">
 <meta name="twitter:image" content="https://s1.ax1x.com/2022/10/06/x3SX59.png">
 
 
@@ -308,7 +308,7 @@
       
     
 
-    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>归档<span class="badge">17</span></a>
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>归档<span class="badge">18</span></a>
 
   </li>
 
@@ -507,9 +507,9 @@
       
 
       
-        <h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p><a href="https://wangtao27.top/2022/09/11/Linux-kernel-compilation/#more" target="_blank" rel="noopener">如何编译Linux内核源码？| 量子孤岛</a>一文中提到了，vmlinux是原始的，未经压缩的内核可执行文件，即kernel编出来的原始产物。</p>
+        <h2 id="前言"><a class="markdownIt-Anchor" href="#前言"></a> 前言</h2>
+<p><a href="https://wangtao27.top/2022/09/11/Linux-kernel-compilation/#more" target="_blank" rel="noopener">如何编译Linux内核源码？| 量子孤岛</a>一文中提到了，vmlinux是原始的，未经压缩的内核可执行文件，即kernel编出来的原始产物。</p>
 <p>本文的主题只有一个：vmlinux到底是怎么生成的？</p>
-<div class="table-container">
 <table>
 <thead>
 <tr>
@@ -526,8 +526,8 @@
 </tr>
 </tbody>
 </table>
-</div>
-<h2 id="按图索骥-内核子系统编译"><a href="#按图索骥-内核子系统编译" class="headerlink" title="按图索骥-内核子系统编译"></a>按图索骥-内核子系统编译</h2><p>kernel中编译的起点是根目录下的Makefile。</p>
+<h2 id="按图索骥-内核子系统编译"><a class="markdownIt-Anchor" href="#按图索骥-内核子系统编译"></a> 按图索骥-内核子系统编译</h2>
+<p>kernel中编译的起点是根目录下的Makefile。</p>
 <p><a href="https://elixir.bootlin.com/linux/v5.4.200/source/Makefile#L1099" target="_blank" rel="noopener">https://elixir.bootlin.com/linux/v5.4.200/source/Makefile#L1099</a></p>
 <figure class="highlight makefile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Final link of vmlinux with optional arch pass after final link</span></span><br><span class="line">cmd_link-vmlinux =                                                 \</span><br><span class="line">	<span class="variable">$(CONFIG_SHELL)</span> <span class="variable">$&lt;</span> <span class="variable">$(LD)</span> <span class="variable">$(KBUILD_LDFLAGS)</span> <span class="variable">$(LDFLAGS_vmlinux)</span> ;    \</span><br><span class="line">	<span class="variable">$(<span class="built_in">if</span> <span class="variable">$(ARCH_POSTLINK)</span>, <span class="variable">$(MAKE)</span> -f <span class="variable">$(ARCH_POSTLINK)</span> <span class="variable">$@</span>, true)</span></span><br><span class="line"></span><br><span class="line"><span class="section">vmlinux: scripts/link-vmlinux.sh autoksyms_recursive $(vmlinux-deps) FORCE</span></span><br><span class="line">	+<span class="variable">$(<span class="built_in">call</span> if_changed,link-vmlinux)</span></span><br><span class="line"></span><br><span class="line">targets := vmlinux</span><br></pre></td></tr></table></figure>
 <p>由脚本可以看出，产物vmlinux的<code>scripts/link-vmlinux.sh</code>有两个依赖：</p>
@@ -575,7 +575,8 @@
 <p>我们来慢慢分析。在<code>vmlinux-deps</code>中的变量，都依赖于<code>vmlinux-dirs</code>变量的值。而<code>vmlinux-dirs</code>展开是众多的子目录，其目标规则最终定定位到<code>$(Q)$(MAKE) $(build)=$@</code>。按照之前我们的已经掌握的先验知识，在<code>scripts/Kbuild.include</code>展开后即</p>
 <figure class="highlight makefile"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">make -f scripts/Makefile.build obj=<span class="variable">$@</span></span><br></pre></td></tr></table></figure>
 <p>即依次回到各个子目录执行编译。</p>
-<h2 id="粘合剂"><a href="#粘合剂" class="headerlink" title="粘合剂"></a>粘合剂</h2><p>上面详细展开了内核子系统的编译流程。当各个子模块都编译完成，这时就需要工具将它们全部粘合起来制作成<code>vmlinux</code>。</p>
+<h2 id="粘合剂"><a class="markdownIt-Anchor" href="#粘合剂"></a> 粘合剂</h2>
+<p>上面详细展开了内核子系统的编译流程。当各个子模块都编译完成，这时就需要工具将它们全部粘合起来制作成<code>vmlinux</code>。</p>
 <p>开篇的第一行代码还没聊，这回该它登场了!</p>
 <figure class="highlight makefile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment"># Final link of vmlinux with optional arch pass after final link</span></span><br><span class="line">cmd_link-vmlinux =                                                 \</span><br><span class="line">	<span class="variable">$(CONFIG_SHELL)</span> <span class="variable">$&lt;</span> <span class="variable">$(LD)</span> <span class="variable">$(KBUILD_LDFLAGS)</span> <span class="variable">$(LDFLAGS_vmlinux)</span> ;    \</span><br><span class="line">	<span class="variable">$(<span class="built_in">if</span> <span class="variable">$(ARCH_POSTLINK)</span>, <span class="variable">$(MAKE)</span> -f <span class="variable">$(ARCH_POSTLINK)</span> <span class="variable">$@</span>, true)</span></span><br></pre></td></tr></table></figure>
 <p>$&lt;表示依赖关系中的第一个依赖，即<code>scripts/link-vmlinux.sh</code>，这个脚本完成后续的链接工作。</p>
@@ -584,7 +585,8 @@
 <p><code>vmlinux_link</code>是一个link函数，其中：</p>
 <figure class="highlight makefile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">$&#123;LD&#125; $&#123;KBUILD_LDFLAGS&#125; $&#123;LDFLAGS_vmlinux&#125;	\</span><br><span class="line">	$&#123;strip_debug<span class="comment">#-Wl,&#125;			\</span></span><br><span class="line">	-o $&#123;output&#125;				\</span><br><span class="line">	-T $&#123;lds&#125; $&#123;objects&#125;</span><br></pre></td></tr></table></figure>
 <p>这里<code>ld</code>的objects就是前面分析的<code>vmlinux-deps</code>.</p>
-<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>用一张图来汇总上面的分析。</p>
+<h2 id="总结"><a class="markdownIt-Anchor" href="#总结"></a> 总结</h2>
+<p>用一张图来汇总上面的分析。</p>
 <p><a href="https://imgse.com/i/x3SX59" target="_blank" rel="noopener"><img src="https://s1.ax1x.com/2022/10/06/x3SX59.png" alt="x3SX59.png"></a></p>
 
       
@@ -669,8 +671,8 @@
         <div class="post-nav">
           <div class="post-nav-next post-nav-item">
             
-              <a href="/2022/09/12/bzImage/" rel="next" title="kernel启动镜像不是vmlinux，而是它！">
-                <i class="fa fa-chevron-left"></i> kernel启动镜像不是vmlinux，而是它！
+              <a href="/2022/09/12/compile-obj-file/" rel="next" title="Linux kernel中.o文件的编译过程">
+                <i class="fa fa-chevron-left"></i> Linux kernel中.o文件的编译过程
               </a>
             
           </div>
@@ -678,6 +680,10 @@
           <span class="post-nav-divider"></span>
 
           <div class="post-nav-prev post-nav-item">
+            
+              <a href="/2022/10/08/bzImage/" rel="prev" title="kernel启动镜像不是vmlinux，而是它！">
+                kernel启动镜像不是vmlinux，而是它！ <i class="fa fa-chevron-right"></i>
+              </a>
             
           </div>
         </div>
@@ -749,7 +755,7 @@
                 
                   <a href="/archives/">
                 
-                    <span class="site-state-item-count">17</span>
+                    <span class="site-state-item-count">18</span>
                     <span class="site-state-item-name">日志</span>
                   </a>
                 </div>
@@ -948,7 +954,7 @@
             
 
             
-              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text">前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#按图索骥-内核子系统编译"><span class="nav-number">2.</span> <span class="nav-text">按图索骥-内核子系统编译</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#粘合剂"><span class="nav-number">3.</span> <span class="nav-text">粘合剂</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#总结"><span class="nav-number">4.</span> <span class="nav-text">总结</span></a></li></ol></div>
+              <div class="post-toc-content"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#前言"><span class="nav-number">1.</span> <span class="nav-text"> 前言</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#按图索骥-内核子系统编译"><span class="nav-number">2.</span> <span class="nav-text"> 按图索骥-内核子系统编译</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#粘合剂"><span class="nav-number">3.</span> <span class="nav-text"> 粘合剂</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#总结"><span class="nav-number">4.</span> <span class="nav-text"> 总结</span></a></li></ol></div>
             
 
           </div>
@@ -990,7 +996,7 @@
     
       <span class="post-meta-item-text">站点总字数：</span>
     
-    <span title="站点总字数">91k</span>
+    <span title="站点总字数">97k</span>
   
 <div class="powered-by">
 <i class="fa fa-user-md"></i><span id="busuanzi_container_site_uv">
@@ -1005,7 +1011,7 @@
     
       <span class="post-meta-item-text">站点阅读时长 &asymp;</span>
     
-    <span title="站点阅读时长">2:31</span>
+    <span title="站点阅读时长">2:42</span>
   
 </div>
 
